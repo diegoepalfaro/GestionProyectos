@@ -6,6 +6,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using GestionTareas.Models;
+using Microsoft.AspNetCore.Http;
+using GestionTareas.Services;
+
 
 namespace GestionTareas.Controllers
 {
@@ -48,37 +51,54 @@ namespace GestionTareas.Controllers
             return View();
         }
 
-        // POST: Usuarios/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("UsuarioId,Nombre,Email,Telefono,Direccion,Contraseña,Estado")] Usuario usuario)
+        public async Task<IActionResult> Create(string Nombre, string Email, string Telefono, string Direccion, string Contraseña, string ConfirmPassword,
+                                        [FromServices] EmailService emailService)
         {
-            if (ModelState.IsValid)
+            if (Contraseña != ConfirmPassword)
             {
-                _context.Add(usuario);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            return View(usuario);
-        }
-
-        // GET: Usuarios/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
+                ModelState.AddModelError("", "Las contraseñas no coinciden.");
+                return View();
             }
 
-            var usuario = await _context.Usuario.FindAsync(id);
-            if (usuario == null)
+            if (_context.Usuario.Any(u => u.Email == Email))
             {
-                return NotFound();
+                ModelState.AddModelError("", "El correo ya está registrado.");
+                return View();
             }
-            return View(usuario);
+
+            Usuario usuario = new Usuario
+            {
+                Nombre = Nombre,
+                Email = Email,
+                Telefono = Telefono,
+                Direccion = Direccion,
+                Contraseña = Contraseña,
+                Estado = true
+            };
+
+            _context.Add(usuario);
+            await _context.SaveChangesAsync();
+
+            // Enviar correo de bienvenida
+            string asunto = "¡Bienvenido a la Plataforma de Gestión de Proyectos!";
+            string cuerpo = $@"
+            <h2>Hola {Nombre}, ¡Bienvenido!</h2>
+            <p>Tu registro se ha completado exitosamente.</p>
+            <p>Ahora puedes gestionar tus proyectos, tareas y equipos dentro de nuestra plataforma.</p>
+            <br/>
+            <p>Nos alegra tenerte con nosotros 👋</p>
+        ";
+
+            await emailService.SendEmail(Email, asunto, cuerpo);
+
+            // Login automático
+            HttpContext.Session.SetInt32("UsuarioId", usuario.UsuarioId);
+
+            return RedirectToAction("Index", "Dashboard");
         }
+
 
         // POST: Usuarios/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
@@ -159,5 +179,33 @@ namespace GestionTareas.Controllers
         {
             return _context.Usuario.Any(e => e.UsuarioId == id);
         }
+
+        [HttpPost]
+        public IActionResult Login(string Email, string Contraseña)
+        {
+            var usuario = _context.Usuario
+                .FirstOrDefault(u => u.Email == Email && u.Contraseña == Contraseña);
+
+            if (usuario == null)
+            {
+                ViewBag.Error = "Correo o contraseña incorrectos";
+                return View();
+            }
+
+            // Guarda el ID del usuario en sesión
+            HttpContext.Session.SetInt32("UsuarioId", usuario.UsuarioId);
+
+            // Redirige al Dashboard
+            return RedirectToAction("Index", "Dashboard");
+        }
+
+        public IActionResult Logout()
+        {
+            HttpContext.Session.Clear();
+            return RedirectToAction("Login", "Usuarios");
+        }
+
+
+
     }
 }

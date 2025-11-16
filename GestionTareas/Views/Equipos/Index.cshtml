@@ -1,0 +1,91 @@
+﻿@model IEnumerable<GestionTareas.Models.Equipo>
+@{
+    ViewBag.Title = "Mis Equipos";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .titulo-equipos {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+    }
+
+    .btn-crear-equipo {
+        background-color: #007bff;
+        color: white;
+        padding: 10px 16px;
+        border-radius: 6px;
+        border: none;
+        text-decoration: none;
+        font-size: 15px;
+        cursor: pointer;
+    }
+
+        .btn-crear-equipo:hover {
+            background-color: #026bda;
+        }
+
+    .tabla-equipos {
+        width: 100%;
+        background: white;
+        border-radius: 6px;
+        border-collapse: collapse;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .tabla-equipos th, .tabla-equipos td {
+        padding: 14px;
+        border-bottom: 1px solid #e1e1e1;
+    }
+
+    .tabla-equipos th {
+        background: #f5f5f5;
+        font-weight: bold;
+        text-align: left;
+    }
+
+    .accion-enlace {
+        text-decoration: none;
+        color: #007bff;
+        font-weight: 600;
+    }
+
+        .accion-enlace:hover {
+            text-decoration: underline;
+        }
+</style>
+
+<div class="titulo-equipos">
+    <h2>Mis Equipos</h2>
+    <a href="@Url.Action("Create", "Equipos")" class="btn-crear-equipo">+ Crear equipo</a>
+</div>
+
+@if (!Model.Any())
+{
+    <p>No estás en ningún equipo todavía.</p>
+}
+else
+{
+    <table class="tabla-equipos">
+        <tr>
+            <th>Nombre</th>
+            <th>Descripción</th>
+            <th>Acción</th>
+        </tr>
+
+        @foreach (var equipo in Model)
+        {
+            <tr>
+                <td>@equipo.Nombre</td>
+                <td>@equipo.Descripcion</td>
+                <td>
+                    <a href="@Url.Action("AgregarMiembros", "Equipos", new { id = equipo.EquipoId })" class="accion-enlace">
+                        Administrar equipo
+                    </a>
+                </td>
+            </tr>
+        }
+    </table>
+}

@@ -1,8 +1,11 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using GestionTareas.Models;
 using Microsoft.EntityFrameworkCore;
+using GestionTareas.Services;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddSession();
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
@@ -29,6 +32,9 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.LoginPath = "/Login/Autenticar";
     });
 
+builder.Services.AddSingleton<EmailService>();
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -43,6 +49,8 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+
+app.UseSession();
 
 app.UseAuthorization();
 

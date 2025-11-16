@@ -22,12 +22,12 @@
         font-family: Arial, sans-serif;
     }
 
-    .registro-card h2 {
-        text-align: center;
-        margin-bottom: 30px;
-        font-size: 28px;
-        font-weight: 600;
-    }
+        .registro-card h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 28px;
+            font-weight: 600;
+        }
 
     .row-flex {
         display: flex;
@@ -73,6 +73,7 @@
         margin-top: 12px;
         color: red;
         text-align: center;
+        font-size: 15px;
     }
 </style>
 
@@ -87,28 +88,30 @@
             <div class="row-flex">
                 <div class="form-group-custom">
                     <label>Nombre</label>
-                    @Html.TextBoxFor(m => m.Nombre, new { @placeholder = "Nombre", @class = "form-control" })
+                    <input type="text" name="Nombre" placeholder="Nombre" class="form-control" required />
                 </div>
-
                 <div class="form-group-custom">
-                    <label>Apellido</label>
-                    @Html.TextBox("Apellido", null, new { @placeholder = "Apellido", @class = "form-control" })
+                    <label>Correo</label>
+                    <input type="email" name="Email" placeholder="correo@correo.com" class="form-control" required />
                 </div>
             </div>
 
             <div class="row-flex">
                 <div class="form-group-custom">
-                    <label>Correo</label>
-                    @Html.TextBoxFor(m => m.Email, new { @type = "email", @placeholder = "correo@correo.com", @class = "form-control" })
+                    <label>Teléfono</label>
+                    <input type="text" name="Telefono" placeholder="7777-7777" class="form-control" required />
+                </div>
+                <div class="form-group-custom">
+                    <label>Dirección</label>
+                    <input type="text" name="Direccion" placeholder="Santa Ana, ES" class="form-control" required />
                 </div>
             </div>
 
             <div class="row-flex">
                 <div class="form-group-custom">
                     <label>Contraseña</label>
-                    <input type="password" name="Password" placeholder="Contraseña" class="form-control" required />
+                    <input type="password" name="Contraseña" placeholder="Contraseña" class="form-control" required />
                 </div>
-
                 <div class="form-group-custom">
                     <label>Confirmar contraseña</label>
                     <input type="password" name="ConfirmPassword" placeholder="Confirmar contraseña" class="form-control" required />

@@ -9,25 +9,38 @@ namespace GestionTareas.Controllers
 {
     public class DashboardController : Controller
     {
-        public ActionResult Index()
+        public IActionResult Index()
         {
-            // La lógica real de la aplicación llenaría este modelo con datos de la BD
+            int? usuarioId = HttpContext.Session.GetInt32("UsuarioId");
+
+            if (usuarioId == null)
+                return RedirectToAction("Login", "Usuarios");
+
+            var usuario = db.Usuarios.FirstOrDefault(u => u.UsuarioId == usuarioId);
+            ViewBag.NombreUsuario = usuario?.Nombre;
+
+            // Obtener todos los equipos del usuario
+            var equiposUsuario = db.EquipoMiembros
+                .Where(x => x.UsuarioId == usuarioId)
+                .Select(x => x.EquipoId)
+                .ToList();
+
+            // Obtener todos los proyectos en los que participa el usuario
+            var proyectosUsuario = db.ProyectoEquipos
+                .Where(x => equiposUsuario.Contains(x.EquipoId))
+                .Select(x => x.Proyecto)
+                .ToList();
+
             var model = new DashboardViewModel
             {
-                ProyectosPendientes = 12,
-                ProyectosEnProceso = 7,
-                ProyectosCompletados = 18,
-
-                ProximosEventos = new List<Models.EventoDashboardViewModel>
-                {
-                    new Models.EventoDashboardViewModel { Descripcion = "Reunión de equipo", Fecha = "19/09/2025" },
-                    new Models.EventoDashboardViewModel { Descripcion = "Entrega de prototipo", Fecha = "23/09/2025" },
-                    new Models.EventoDashboardViewModel { Descripcion = "Presentación al cliente", Fecha = "09/10/2025" }
-                }
+                ProyectosPendientes = proyectosUsuario.Count(p => p.Estado == "Pendiente"),
+                ProyectosEnProceso = proyectosUsuario.Count(p => p.Estado == "En Progreso"),
+                ProyectosCompletados = proyectosUsuario.Count(p => p.Estado == "Completado")
             };
 
             return View(model);
         }
+
         private GestionProyectosContext db = new GestionProyectosContext(); // Reemplaza 'YourDbContext' con tu contexto de base de datos real
 
         // Acción principal para la vista de calendario

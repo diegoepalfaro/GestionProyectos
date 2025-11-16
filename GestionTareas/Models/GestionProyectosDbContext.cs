@@ -10,6 +10,11 @@ namespace GestionTareas.Models
         public DbSet<GestionTareas.Models.Proyecto> Proyecto { get; set; } = default!;
         public DbSet<GestionTareas.Models.Archivo> Archivo { get; set; } = default!;
 
+        public DbSet<GestionTareas.Models.EquipoMiembro> EquipoMiembro { get; set; } = default!;
+        public DbSet<GestionTareas.Models.Equipo> Equipo { get; set; } = default!;
+
+
+
 
     }
 }
