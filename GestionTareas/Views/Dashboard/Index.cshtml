@@ -1,0 +1,170 @@
+﻿@model DashboardViewModel
+@{
+    ViewBag.Title = "Dashboard";
+    Layout = null; /* Evita que el layout principal agregue bordes, menu y margenes */
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Dashboard</title>
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background-color: #e6e6e6;
+            overflow: hidden;
+        }
+
+        .layout {
+            display: flex;
+            height: 100vh;
+            width: 100vw;
+        }
+
+        /* Menú lateral */
+        .menu-lateral {
+            width: 220px;
+            background-color: #595959;
+            color: white;
+            padding: 30px 25px;
+            box-sizing: border-box;
+        }
+
+            .menu-lateral h3 {
+                font-size: 22px;
+                margin-bottom: 25px;
+            }
+
+            .menu-lateral ul {
+                list-style: none;
+                padding: 0;
+                margin: 0;
+            }
+
+            .menu-lateral li {
+                margin: 15px 0;
+                font-size: 18px;
+                cursor: pointer;
+            }
+
+        /* Contenido principal */
+        .contenido {
+            flex: 1;
+            padding: 35px 40px;
+            overflow-y: auto;
+        }
+
+        .resumen-proyectos {
+            display: flex;
+            justify-content: left;
+            gap: 35px;
+            margin: 30px 0 50px 0;
+        }
+
+        .tarjeta {
+            width: 190px;
+            padding: 18px 0;
+            border-radius: 6px;
+            text-align: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .pendiente {
+            background-color: #e04b44;
+        }
+
+        .proceso {
+            background-color: #e9b645;
+        }
+
+        .completado {
+            background-color: #5cb85c;
+        }
+
+        .tarjeta .numero {
+            font-size: 34px;
+            margin-top: 8px;
+        }
+
+        /* Tabla eventos */
+        .tabla-eventos {
+            width: 60%;
+            background-color: white;
+            border-radius: 6px;
+            overflow: hidden;
+            border-collapse: collapse;
+        }
+
+            .tabla-eventos td {
+                padding: 15px;
+                border-bottom: 1px solid #dcdcdc;
+                font-size: 16px;
+            }
+
+            .tabla-eventos tr:last-child td {
+                border-bottom: none;
+            }
+    </style>
+</head>
+
+<body>
+
+    <div class="layout">
+
+        <!-- Menú -->
+        <aside class="menu-lateral">
+            <h3>Menu</h3>
+            <ul>
+                <li>@Html.ActionLink("Calendario", "Calendario", "Dashboard")</li>
+                <li>@Html.ActionLink("Proyectos", "Index", "Proyectos")</li>
+                <li>@Html.ActionLink("Crear proyecto", "Create", "Proyectos")</li>
+                <li>@Html.ActionLink("Equipo", "Index", "Equipos")</li>
+
+            </ul>
+        </aside>
+
+        <!-- Contenido -->
+        <section class="contenido">
+            <h2>Resumen de proyectos</h2>
+
+            <div class="resumen-proyectos">
+                <div class="tarjeta pendiente">
+                    Pendientes
+                    <div class="numero">@Model.ProyectosPendientes</div>
+                </div>
+
+                <div class="tarjeta proceso">
+                    En proceso
+                    <div class="numero">@Model.ProyectosEnProceso</div>
+                </div>
+
+                <div class="tarjeta completado">
+                    Completados
+                    <div class="numero">@Model.ProyectosCompletados</div>
+                </div>
+            </div>
+
+            <h2>Proximos Eventos</h2>
+
+            <table class="tabla-eventos">
+                <tbody>
+                    @foreach (var evento in Model.ProximosEventos)
+                    {
+                        <tr>
+                            <td>@evento.Descripcion</td>
+                            <td style="text-align:right;">@evento.Fecha</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+        </section>
+
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,56 @@
+﻿@* Archivo: Views/Proyectos/Calendario.cshtml *@
+
+@{
+    ViewBag.Title = "Calendario de Proyectos";
+}
+
+<h2>Calendario de Proyectos</h2>
+
+<div id="calendar" style="max-width: 900px; margin: 40px auto;"></div>
+
+
+@section scripts {
+
+    <script>
+        $(document).ready(function () {
+
+            // Inicializar el calendario
+            $('#calendar').fullCalendar({
+                header: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'month,agendaWeek,agendaDay' // Vistas disponibles
+                },
+                defaultView: 'month', // Vista por defecto (similar a tu imagen)
+                locale: 'es', // Usar idioma español
+                editable: false, // Permite arrastrar y redimensionar eventos (cambiar a true si lo necesitas)
+                eventLimit: true, // Permite el "more" link si hay demasiados eventos
+
+                // Configuración para cargar los eventos
+                events: {
+                    // Llama a la acción del controlador que devuelve los datos JSON
+                    url: '@Url.Action("GetProyectosAsEvents", "Proyectos")',
+                    type: 'GET',
+                    error: function() {
+                        alert('Hubo un error al cargar los proyectos!');
+                    }
+                },
+
+                // Manejador del evento clic en un proyecto
+                eventClick: function(calEvent, jsEvent, view) {
+                    // Si tienes una URL definida en tu objeto CalendarEvent (p.url)
+                    if (calEvent.url) {
+                        window.location.href = calEvent.url;
+                        return false; // Prevenir el comportamiento por defecto
+                    }
+                },
+
+                // Opcional: Personalizar cómo se ve el evento. Muestra la descripción en un tooltip.
+                eventRender: function (event, element) {
+                    element.attr('title', event.title + '\n' + '@("Fecha de Inicio: ")' + moment(event.start).format('DD-MM-YYYY') +
+                        (event.end ? '\n' + '@("Fecha de Fin: ")' + moment(event.end).subtract(1, 'days').format('DD-MM-YYYY') : ''));
+                }
+            });
+        });
+    </script>
+}
