@@ -43,7 +43,12 @@ CREATE TABLE Proyectos (
     Descripcion NVARCHAR(MAX),
     FechaInicio DATE NOT NULL,
     FechaFin DATE,
-    Estado NVARCHAR(50) DEFAULT 'En Progreso'
+	EquipoID INT NOT NULL,
+    Estado NVARCHAR(50) DEFAULT 'En Progreso',
+	
+	ADD CONSTRAINT FK_Proyecto_Equipo
+	FOREIGN KEY (EquipoId) REFERENCES Equipo(EquipoId);
+
 );
 
 -- Tabla de Equipos de Proyecto

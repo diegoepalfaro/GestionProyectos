@@ -36,7 +36,7 @@ namespace GestionTareas.Controllers
             }
 
             var usuario = await _context.Usuario
-                .FirstOrDefaultAsync(m => m.UsuarioId == id);
+                .FirstOrDefaultAsync(m => m.UsuarioID == id);
             if (usuario == null)
             {
                 return NotFound();
@@ -94,7 +94,7 @@ namespace GestionTareas.Controllers
             await emailService.SendEmail(Email, asunto, cuerpo);
 
             // Login automático
-            HttpContext.Session.SetInt32("UsuarioId", usuario.UsuarioId);
+            HttpContext.Session.SetInt32("UsuarioID", usuario.UsuarioID);
 
             return RedirectToAction("Index", "Dashboard");
         }
@@ -102,12 +102,12 @@ namespace GestionTareas.Controllers
 
         // POST: Usuarios/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        // For more details, see http://go.microsoft.com/fwlink/?LinkID=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("UsuarioId,Nombre,Email,Telefono,Direccion,Contraseña,Estado")] Usuario usuario)
+        public async Task<IActionResult> Edit(int id, [Bind("UsuarioID,Nombre,Email,Telefono,Direccion,Contraseña,Estado")] Usuario usuario)
         {
-            if (id != usuario.UsuarioId)
+            if (id != usuario.UsuarioID)
             {
                 return NotFound();
             }
@@ -121,7 +121,7 @@ namespace GestionTareas.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!UsuarioExists(usuario.UsuarioId))
+                    if (!UsuarioExists(usuario.UsuarioID))
                     {
                         return NotFound();
                     }
@@ -144,7 +144,7 @@ namespace GestionTareas.Controllers
             }
 
             var usuario = await _context.Usuario
-                .FirstOrDefaultAsync(m => m.UsuarioId == id);
+                .FirstOrDefaultAsync(m => m.UsuarioID == id);
             if (usuario == null)
             {
                 return NotFound();
@@ -177,7 +177,7 @@ namespace GestionTareas.Controllers
 
         private bool UsuarioExists(int id)
         {
-            return _context.Usuario.Any(e => e.UsuarioId == id);
+            return _context.Usuario.Any(e => e.UsuarioID == id);
         }
 
         [HttpPost]
@@ -189,13 +189,10 @@ namespace GestionTareas.Controllers
             if (usuario == null)
             {
                 ViewBag.Error = "Correo o contraseña incorrectos";
-                return View();
+                return View("Login");
             }
 
-            // Guarda el ID del usuario en sesión
-            HttpContext.Session.SetInt32("UsuarioId", usuario.UsuarioId);
-
-            // Redirige al Dashboard
+            HttpContext.Session.SetInt32("UsuarioID", usuario.UsuarioID);
             return RedirectToAction("Index", "Dashboard");
         }
 

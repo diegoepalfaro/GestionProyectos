@@ -1,88 +1,102 @@
-﻿// Archivo: Controllers/DashboardController.cs
-using GestionTareas.Models;
-//using GestionTareas.ViewModels; // Necesitas esta referencia
-using System.Collections.Generic;
-using System.Linq;
+﻿using GestionTareas.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
 namespace GestionTareas.Controllers
 {
     public class DashboardController : Controller
     {
+        private readonly GestionProyectosDbContext db;
+
+        public DashboardController(GestionProyectosDbContext context)
+        {
+            db = context;
+        }
+
         public IActionResult Index()
         {
-            int? usuarioId = HttpContext.Session.GetInt32("UsuarioId");
+            int? usuarioID = HttpContext.Session.GetInt32("UsuarioID");
 
-            if (usuarioId == null)
+            if (usuarioID == null)
                 return RedirectToAction("Login", "Usuarios");
 
-            var usuario = db.Usuarios.FirstOrDefault(u => u.UsuarioId == usuarioId);
+            var usuario = db.Usuario.FirstOrDefault(u => u.UsuarioID == usuarioID);
             ViewBag.NombreUsuario = usuario?.Nombre;
 
-            // Obtener todos los equipos del usuario
-            var equiposUsuario = db.EquipoMiembros
-                .Where(x => x.UsuarioId == usuarioId)
-                .Select(x => x.EquipoId)
+            // Obtener equipos del usuario
+            var equiposUsuario = db.EquipoMiembro
+                .Where(x => x.UsuarioID == usuarioID)
+                .Select(x => x.EquipoID)
                 .ToList();
 
-            // Obtener todos los proyectos en los que participa el usuario
-            var proyectosUsuario = db.ProyectoEquipos
-                .Where(x => equiposUsuario.Contains(x.EquipoId))
-                .Select(x => x.Proyecto)
+            // Obtener proyectos de dichos equipos
+            var proyectosUsuario = db.Proyecto
+                .Where(p => equiposUsuario.Contains(p.EquipoID))
                 .ToList();
 
             var model = new DashboardViewModel
             {
                 ProyectosPendientes = proyectosUsuario.Count(p => p.Estado == "Pendiente"),
                 ProyectosEnProceso = proyectosUsuario.Count(p => p.Estado == "En Progreso"),
-                ProyectosCompletados = proyectosUsuario.Count(p => p.Estado == "Completado")
+                ProyectosCompletados = proyectosUsuario.Count(p => p.Estado == "Completado"),
+                ProximosEventos = proyectosUsuario
+                    .OrderBy(p => p.FechaInicio)
+                    .Select(p => new EventosDashboard
+                    {
+                        Descripcion = p.Nombre,
+                        Fecha = p.FechaInicio.ToString("yyyy-MM-dd")
+                    })
+                    .Take(5)
+                    .ToList()
             };
 
             return View(model);
         }
 
-        private GestionProyectosContext db = new GestionProyectosContext(); // Reemplaza 'YourDbContext' con tu contexto de base de datos real
+        // NUEVA ACCIÓN: listado de proyectos del usuario para elegir de cuál ver tareas
+        public IActionResult SeleccionarProyecto()
+        {
+            int? usuarioID = HttpContext.Session.GetInt32("UsuarioID");
+            if (usuarioID == null)
+                return RedirectToAction("Login", "Usuarios");
 
-        // Acción principal para la vista de calendario
-        public ActionResult Calendario()
+            // Equipos a los que pertenece el usuario
+            var equiposUsuario = db.EquipoMiembro
+                .Where(x => x.UsuarioID == usuarioID)
+                .Select(x => x.EquipoID)
+                .ToList();
+
+            // Proyectos de esos equipos
+            var proyectosUsuario = db.Proyecto
+                .Where(p => equiposUsuario.Contains(p.EquipoID))
+                .OrderBy(p => p.Nombre)
+                .ToList();
+
+            return View(proyectosUsuario);
+        }
+
+        public IActionResult Calendario()
         {
             return View();
         }
 
-        // Acción que devuelve los datos de los proyectos en formato JSON para FullCalendar
         public IActionResult GetProyectosAsEvents()
         {
-            // 1. Obtener los proyectos de tu base de datos
-            var proyectos = db.Proyectos.ToList();
+            var proyectos = db.Proyecto.ToList();
 
-            // 2. Mapear los Proyectos a la estructura de CalendarEvent
-            var eventos = proyectos.Select(p => new EventoCalendario
+            var eventos = proyectos.Select(p => new
             {
-                id = p.ProyectoId,
+                id = p.ProyectoID,
                 title = p.Nombre,
-                // Convertir DateTime a formato ISO 8601 (necesario para FullCalendar)
                 start = p.FechaInicio.ToString("yyyy-MM-dd"),
-                // Para eventos de día completo, FullCalendar espera que la fecha final sea **el día después** del final real.
-                // Si FechaFin es nula, usamos FechaInicio. Si no, le sumamos un día.
                 end = p.FechaFin.HasValue ? p.FechaFin.Value.AddDays(1).ToString("yyyy-MM-dd") : p.FechaInicio.AddDays(1).ToString("yyyy-MM-dd"),
                 allDay = true,
-                // Establecer color basado en el estado (opcional)
-                color = GetColorByEstado(p.Estado),
-                // Crear una URL para que el evento sea clickeable (ej. redirigir a la vista de detalles del proyecto)
-                url = Url.Action("Details", "Proyectos", new { id = p.ProyectoId })
-            }).ToList();
+                url = Url.Action("Details", "Proyectos", new { id = p.ProyectoID })
+            });
 
-            // 3. Devolver los eventos como JSON
             return Json(eventos);
-        }
-
-        // Método auxiliar para asignar un color
-        private string GetColorByEstado(string estado)
-        {
-            if (estado == "Completado") return "#4CAF50"; // Verde
-            if (estado == "En Progreso") return "#FFC107"; // Amarillo
-            if (estado == "Atrasado") return "#F44336"; // Rojo
-            return "#3a87ad"; // Azul por defecto
         }
     }
 }

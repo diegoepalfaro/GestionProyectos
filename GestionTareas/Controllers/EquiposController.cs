@@ -17,14 +17,14 @@ namespace GestionTareas.Controllers
         // LISTAR EQUIPOS
         public IActionResult Index()
         {
-            int? usuarioId = HttpContext.Session.GetInt32("UsuarioId");
-            if (usuarioId == null)
+            int? usuarioID = HttpContext.Session.GetInt32("UsuarioID");
+            if (usuarioID == null)
                 return RedirectToAction("Login", "Usuarios");
 
             // Equipos donde el usuario es miembro
             var equipos = (from em in _context.EquipoMiembro
-                           join eq in _context.Equipo on em.EquipoId equals eq.EquipoId
-                           where em.UsuarioId == usuarioId
+                           join eq in _context.Equipo on em.EquipoID equals eq.EquipoID
+                           where em.UsuarioID == usuarioID
                            select eq).ToList();
 
             return View(equipos);
@@ -50,13 +50,13 @@ namespace GestionTareas.Controllers
             await _context.SaveChangesAsync();
 
             // 2. Obtener usuario en sesión (el creador)
-            int? usuarioId = HttpContext.Session.GetInt32("UsuarioId");
-            if (usuarioId != null)
+            int? usuarioID = HttpContext.Session.GetInt32("UsuarioID");
+            if (usuarioID != null)
             {
                 _context.EquipoMiembro.Add(new EquipoMiembro
                 {
-                    EquipoId = equipo.EquipoId,
-                    UsuarioId = usuarioId.Value,
+                    EquipoID = equipo.EquipoID,
+                    UsuarioID = usuarioID.Value,
                     RolEnEquipo = "Líder"
                 });
 
@@ -64,7 +64,7 @@ namespace GestionTareas.Controllers
             }
 
             // 3. Redirigir a agregar miembros
-            return RedirectToAction("AgregarMiembros", new { id = equipo.EquipoId });
+            return RedirectToAction("AgregarMiembros", new { id = equipo.EquipoID });
         }
 
 
@@ -72,27 +72,27 @@ namespace GestionTareas.Controllers
         // VISTA PARA AGREGAR USUARIOS
         public IActionResult AgregarMiembros(int id)
         {
-            var equipo = _context.Equipo.FirstOrDefault(e => e.EquipoId == id);
+            var equipo = _context.Equipo.FirstOrDefault(e => e.EquipoID == id);
             if (equipo == null) return NotFound();
 
-            int? usuarioId = HttpContext.Session.GetInt32("UsuarioId");
-            if (usuarioId == null) return RedirectToAction("Login", "Usuarios");
+            int? usuarioID = HttpContext.Session.GetInt32("UsuarioID");
+            if (usuarioID == null) return RedirectToAction("Login", "Usuarios");
 
             // Obtener miembros del equipo
             var miembros = (from em in _context.EquipoMiembro
-                            join u in _context.Usuario on em.UsuarioId equals u.UsuarioId
-                            where em.EquipoId == id
+                            join u in _context.Usuario on em.UsuarioID equals u.UsuarioID
+                            where em.EquipoID == id
                             select new
                             {
-                                em.EquipoMiembroId,
-                                u.UsuarioId,
+                                em.EquipoMiembroID,
+                                u.UsuarioID,
                                 u.Nombre,
                                 u.Email,
                                 em.RolEnEquipo
                             }).ToList();
 
-            ViewBag.EsLider = miembros.Any(m => m.UsuarioId == usuarioId && m.RolEnEquipo == "Líder");
-            ViewBag.EquipoId = id;
+            ViewBag.EsLider = miembros.Any(m => m.UsuarioID == usuarioID && m.RolEnEquipo == "Líder");
+            ViewBag.EquipoID = id;
             ViewBag.NombreEquipo = equipo.Nombre;
             ViewBag.Miembros = miembros;
 
@@ -100,58 +100,58 @@ namespace GestionTareas.Controllers
         }
 
         [HttpPost]
-        public IActionResult CambiarRol(int EquipoMiembroId)
+        public IActionResult CambiarRol(int EquipoMiembroID)
         {
-            var miembro = _context.EquipoMiembro.FirstOrDefault(m => m.EquipoMiembroId == EquipoMiembroId);
+            var miembro = _context.EquipoMiembro.FirstOrDefault(m => m.EquipoMiembroID == EquipoMiembroID);
             if (miembro == null) return NotFound();
 
-            int equipoId = miembro.EquipoId;
+            int equipoID = miembro.EquipoID;
 
             // Obtener todos los líderes del equipo (evitar quedarse sin líder)
             bool esLider = miembro.RolEnEquipo == "Líder";
-            int totalLideres = _context.EquipoMiembro.Count(m => m.EquipoId == equipoId && m.RolEnEquipo == "Líder");
+            int totalLideres = _context.EquipoMiembro.Count(m => m.EquipoID == equipoID && m.RolEnEquipo == "Líder");
 
             if (esLider && totalLideres == 1)
             {
                 TempData["Error"] = "El equipo no puede quedarse sin líder.";
-                return RedirectToAction("AgregarMiembros", new { id = equipoId });
+                return RedirectToAction("AgregarMiembros", new { id = equipoID });
             }
 
             miembro.RolEnEquipo = esLider ? "Miembro" : "Líder";
             _context.SaveChanges();
 
             TempData["Success"] = "Rol actualizado correctamente.";
-            return RedirectToAction("AgregarMiembros", new { id = equipoId });
+            return RedirectToAction("AgregarMiembros", new { id = equipoID });
         }
 
 
         // BUSCAR USUARIO POR CORREO Y AGREGARLO AL EQUIPO
         [HttpPost]
-        public async Task<IActionResult> AgregarMiembro(int EquipoId, string Email, [FromServices] EmailService emailService)
+        public async Task<IActionResult> AgregarMiembro(int EquipoID, string Email, [FromServices] EmailService emailService)
         {
-            var equipo = _context.Equipo.FirstOrDefault(e => e.EquipoId == EquipoId);
+            var equipo = _context.Equipo.FirstOrDefault(e => e.EquipoID == EquipoID);
             if (equipo == null) return NotFound();
 
             var usuario = _context.Usuario.FirstOrDefault(u => u.Email == Email);
             if (usuario == null)
             {
                 TempData["Error"] = "No existe ningún usuario con ese correo.";
-                return RedirectToAction("AgregarMiembros", new { id = EquipoId });
+                return RedirectToAction("AgregarMiembros", new { id = EquipoID });
             }
 
             // Verificar si ya es miembro
-            bool existe = _context.EquipoMiembro.Any(x => x.EquipoId == EquipoId && x.UsuarioId == usuario.UsuarioId);
+            bool existe = _context.EquipoMiembro.Any(x => x.EquipoID == EquipoID && x.UsuarioID == usuario.UsuarioID);
             if (existe)
             {
                 TempData["Error"] = "Ese usuario ya pertenece al equipo.";
-                return RedirectToAction("AgregarMiembros", new { id = EquipoId });
+                return RedirectToAction("AgregarMiembros", new { id = EquipoID });
             }
 
             // Agregar
             _context.EquipoMiembro.Add(new EquipoMiembro
             {
-                EquipoId = EquipoId,
-                UsuarioId = usuario.UsuarioId,
+                EquipoID = EquipoID,
+                UsuarioID = usuario.UsuarioID,
                 RolEnEquipo = "Miembro"
             });
             await _context.SaveChangesAsync();
@@ -168,7 +168,7 @@ namespace GestionTareas.Controllers
             await emailService.SendEmail(usuario.Email, asunto, mensaje);
 
             TempData["Success"] = "Usuario añadido correctamente y notificado.";
-            return RedirectToAction("AgregarMiembros", new { id = EquipoId });
+            return RedirectToAction("AgregarMiembros", new { id = EquipoID });
         }
     }
 }

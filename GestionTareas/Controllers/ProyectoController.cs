@@ -1,82 +1,91 @@
-﻿using GestionTareas.Models; // Tu modelo de datos
-using Microsoft.AspNetCore.Mvc; // Para el controlador
-using Microsoft.EntityFrameworkCore; // Para los métodos asíncronos de EF Core
+﻿using GestionTareas.Models;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace GestionTareas.Controllers
 {
-    public class ProyectosController : Controller // Hereda de Controller de Core
+    public class ProyectosController : Controller
     {
-        // 1. Campo privado para el DbContext
         private readonly GestionProyectosDbContext _context;
 
-        // 2. Inyección de Dependencias (Constructor)
-        // El framework crea e inyecta la instancia de GestionProyectosContext
         public ProyectosController(GestionProyectosDbContext context)
         {
             _context = context;
         }
 
-        // GET: Proyectos
-        // IActionResult es el tipo de retorno estándar en Core
         public async Task<IActionResult> Index(string search)
         {
-            // Usa _context en lugar de db
-            var proyectos = _context.Proyecto.AsQueryable();
+            int? usuarioID = HttpContext.Session.GetInt32("UsuarioID");
+            if (usuarioID == null)
+                return RedirectToAction("Login", "Usuarios");
+
+            var proyectosUsuario =
+                from em in _context.EquipoMiembro
+                join eq in _context.Equipo on em.EquipoID equals eq.EquipoID
+                join pr in _context.Proyecto on eq.EquipoID equals pr.EquipoID
+                where em.UsuarioID == usuarioID
+                select pr;
 
             if (!string.IsNullOrEmpty(search))
             {
-                // Usamos ToLower() para búsquedas case-insensitive
-                string searchLower = search.ToLower();
-                proyectos = proyectos.Where(p =>
-                    (p.Nombre != null && p.Nombre.ToLower().Contains(searchLower)) ||
-                    (p.Descripcion != null && p.Descripcion.ToLower().Contains(searchLower))
-                );
+                string s = search.ToLower();
+                proyectosUsuario = proyectosUsuario.Where(p =>
+                    p.Nombre.ToLower().Contains(s) ||
+                    (p.Descripcion != null && p.Descripcion.ToLower().Contains(s)));
             }
 
-            // Usamos ToListAsync() para operaciones asíncronas
-            var listaProyectos = await proyectos.OrderBy(p => p.Nombre).ToListAsync();
-
-            return View(listaProyectos);
+            return View(await proyectosUsuario.OrderBy(p => p.Nombre).ToListAsync());
         }
 
-        // GET: Proyectos/Create
         public IActionResult Create()
         {
+            int? usuarioID = HttpContext.Session.GetInt32("UsuarioID");
+            if (usuarioID == null)
+                return RedirectToAction("Login", "Usuarios");
+
+            var equiposUsuario =
+                from em in _context.EquipoMiembro
+                join eq in _context.Equipo on em.EquipoID equals eq.EquipoID
+                where em.UsuarioID == usuarioID
+                select eq;
+
+            ViewBag.Equipos = new SelectList(equiposUsuario.ToList(), "EquipoID", "Nombre");
             return View("Crear");
         }
 
-        // POST: Proyectos/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        // Se recomienda usar Task<IActionResult> para operaciones de escritura
         public async Task<IActionResult> Create(Proyecto proyecto)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(proyecto); // Método de Add en Core
-                await _context.SaveChangesAsync(); // Guardado asíncrono
-                return RedirectToAction(nameof(Index)); // Uso de nameof para seguridad de tipo
+                _context.Add(proyecto);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
             }
-            return View("Crear",proyecto);
+
+            int? usuarioID = HttpContext.Session.GetInt32("UsuarioID");
+            var equiposUsuario =
+                from em in _context.EquipoMiembro
+                join eq in _context.Equipo on em.EquipoID equals eq.EquipoID
+                where em.UsuarioID == usuarioID
+                select eq;
+
+            ViewBag.Equipos = new SelectList(equiposUsuario.ToList(), "EquipoID", "Nombre");
+            return View("Crear", proyecto);
         }
 
-        // GET: Proyectos/Details/5
-        public async Task<IActionResult> Details(int? id)
+        public async Task<IActionResult> Details(int id)
         {
-            // Reemplaza HttpStatusCodeResult por NotFound() o BadRequest()
-            if (id == null) return NotFound();
-
-            // Reemplaza db.Proyectos.Find() por SingleOrDefaultAsync() o FindAsync()
-            var proyecto = await _context.Proyecto.FirstOrDefaultAsync(m => m.ProyectoId== id);
-
-            if (proyecto == null) return NotFound(); // Reemplaza HttpNotFound()
+            var proyecto = await _context.Proyecto.FirstOrDefaultAsync(p => p.ProyectoID == id);
+            if (proyecto == null)
+                return NotFound();
 
             return View(proyecto);
         }
-
-        // Nota: La implementación de Dispose no es necesaria en el controlador de Core,
-        // ya que la Inyección de Dependencias gestiona el ciclo de vida del DbContext.
     }
 }

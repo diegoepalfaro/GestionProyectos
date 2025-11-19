@@ -5,13 +5,13 @@ namespace GestionTareas.Models;
 
 public partial class Archivo
 {
-    public int ArchivoId { get; set; }
+    public int ArchivoID { get; set; }
 
-    public int? TareaId { get; set; }
+    public int? TareaID { get; set; }
 
-    public int? ProyectoId { get; set; }
+    public int? ProyectoID { get; set; }
 
-    public int UsuarioId { get; set; }
+    public int UsuarioID { get; set; }
 
     public string NombreArchivo { get; set; } = null!;
 

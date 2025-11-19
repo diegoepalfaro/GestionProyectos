@@ -1,4 +1,4 @@
-﻿@model DashboardViewModel
+﻿@model GestionTareas.Models.DashboardViewModel
 @{
     ViewBag.Title = "Dashboard";
     Layout = null;
@@ -145,6 +145,8 @@
                     <li>@Html.ActionLink("Proyectos", "Index", "Proyectos")</li>
                     <li>@Html.ActionLink("Crear proyecto", "Create", "Proyectos")</li>
                     <li>@Html.ActionLink("Equipo", "Index", "Equipos")</li>
+                    <li>@Html.ActionLink("Tareas por proyecto", "SeleccionarProyecto", "Dashboard")</li>
+
                 </ul>
             </div>
 
@@ -178,7 +180,7 @@
                 </div>
             </div>
 
-            <h2>Proximos Eventos</h2>
+            <h2>Próximos Eventos</h2>
             <table class="tabla-eventos">
                 <tbody>
                     @if (Model.ProximosEventos != null && Model.ProximosEventos.Any())

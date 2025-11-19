@@ -16,7 +16,7 @@
 
 <!-- Formulario agregar miembro -->
 <form asp-action="AgregarMiembro" method="post" style="margin-bottom:30px;">
-    <input type="hidden" name="EquipoId" value="@ViewBag.EquipoId" />
+    <input type="hidden" name="EquipoID" value="@ViewBag.EquipoID" />
     <label>Correo del usuario</label>
     <input type="email" name="Email" class="form-control" required />
     <button class="btn btn-success mt-2">Agregar al equipo</button>
@@ -43,7 +43,7 @@
                     @if ((bool)ViewBag.EsLider)
                     {
                         <form asp-action="CambiarRol" method="post" style="display:inline;">
-                            <input type="hidden" name="EquipoMiembroId" value="@m.EquipoMiembroId" />
+                            <input type="hidden" name="EquipoMiembroID" value="@m.EquipoMiembroID" />
                             <button type="submit" class="btn btn-sm btn-primary">Cambiar rol</button>
                         </form>
                     }

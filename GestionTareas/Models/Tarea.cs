@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace GestionTareas.Models;
 
 public partial class Tarea
 {
-    public int TareaId { get; set; }
+    public int TareaID { get; set; }
 
-    public int ProyectoId { get; set; }
+    public int ProyectoID { get; set; }
 
     public int? AsignadoA { get; set; }
 
@@ -23,9 +24,12 @@ public partial class Tarea
 
     public DateTime? FechaFin { get; set; }
 
+    [ForeignKey("AsignadoA")]
+    public virtual Usuario UsuarioAsignado { get; set; }
+
     public virtual ICollection<Archivo> Archivos { get; set; } = new List<Archivo>();
 
-    public virtual Usuario? AsignadoANavigation { get; set; }
+    //public virtual Usuario? AsignadoANavigation { get; set; }
 
     public virtual ICollection<Comentario> Comentarios { get; set; } = new List<Comentario>();
 

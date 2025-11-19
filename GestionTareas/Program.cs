@@ -32,7 +32,8 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.LoginPath = "/Login/Autenticar";
     });
 
-builder.Services.AddSingleton<EmailService>();
+builder.Services.AddScoped<EmailService>();
+
 
 
 var app = builder.Build();
