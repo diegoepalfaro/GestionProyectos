@@ -257,6 +257,11 @@
 
             @foreach (var t in Model.Where(x => x.Estado == "Pendiente"))
             {
+                <div>
+                    <strong>👤 @((t.UsuarioAsignado != null) ? t.UsuarioAsignado.Nombre : "Sin asignar")</strong>
+                </div>
+
+
                 <div class="tarea @(t.Prioridad == "Alta" ? "alta" : (t.Prioridad == "Media" ? "media" : "baja"))"
                      data-id="@t.TareaID" draggable="true">
 

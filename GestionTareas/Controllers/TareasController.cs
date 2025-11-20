@@ -43,9 +43,11 @@ namespace GestionTareas.Controllers
             ViewBag.ProyectoNombre = proyecto.Nombre;
 
             var tareas = _context.Tarea
+                .Include(t => t.UsuarioAsignado)   // 👈 cargar usuario asignado
                 .Where(t => t.ProyectoID == id)
                 .OrderBy(t => t.FechaInicio)
                 .ToList();
+
 
             ViewBag.UsuariosEquipo = _context.EquipoMiembro
                 .Where(em => em.EquipoID == proyecto.EquipoID)
