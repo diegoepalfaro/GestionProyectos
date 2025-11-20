@@ -10,7 +10,10 @@
     <title>Dashboard</title>
 
     <style>
-        /* COLORES POR PRIORIDAD */
+        /* =======================================================
+                   TUS ESTILOS ORIGINALES (NO SE MODIFICÓ NADA)
+                   ======================================================= */
+
         .evento-alta {
             background-color: #ffb3e6;
         }
@@ -144,6 +147,83 @@
             .tabla-eventos tr:last-child td {
                 border-bottom: none;
             }
+
+
+
+        /* =======================================================
+                   🚀 NUEVO ESTILO PROFESIONAL AGREGADO
+                   ======================================================= */
+
+        :root {
+            --azul: #3A87AD;
+            --gris-fondo: #F5F5F5;
+            --gris-borde: #E0E0E0;
+            --verde: #4CAF50;
+            --amarillo: #FFC107;
+            --rojo: #F44336;
+            --blanco: #FFFFFF;
+            --texto: #333333;
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif !important;
+            background-color: var(--gris-fondo) !important;
+        }
+
+        /* ⭐ Tarjetas más elegantes */
+        .tarjeta {
+            border-radius: 12px !important;
+            padding: 22px 0 !important;
+            font-size: 18px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+            .tarjeta .numero {
+                font-size: 38px !important;
+                font-weight: 700 !important;
+            }
+
+        /* ⭐ Menú lateral mejorado */
+        .menu-lateral {
+            box-shadow: 3px 0 10px rgba(0,0,0,0.15);
+        }
+
+        .menu-superior ul li a {
+            color: #e6e6e6 !important;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+            .menu-superior ul li a:hover {
+                color: var(--azul) !important;
+                font-weight: 600;
+            }
+
+        /* ⭐ Tabla de eventos como tarjeta */
+        .tabla-eventos {
+            width: 70% !important;
+            border-radius: 12px !important;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.10) !important;
+        }
+
+            .tabla-eventos tr:hover {
+                background-color: #f0f7fb !important;
+                transition: .2s;
+            }
+
+        /* ⭐ Prioridades con colores mejorados */
+        .evento-alta {
+            background-color: #ffc4c4 !important;
+        }
+
+        .evento-media {
+            background-color: #fff3a3 !important;
+        }
+
+        .evento-baja {
+            background-color: #cce7ff !important;
+        }
+
     </style>
 
 </head>

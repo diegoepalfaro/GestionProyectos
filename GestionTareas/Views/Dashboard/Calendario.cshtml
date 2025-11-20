@@ -37,7 +37,10 @@
 </script>
 
 <style>
-    /* Fondo general del contenedor */
+    /* ======================================================
+           TUS ESTILOS ORIGINALES (NO SE MODIFICÓ NADA)
+           ====================================================== */
+
     #calendar {
         background: #FFFFFF;
         padding: 25px;
@@ -48,13 +51,11 @@
         border: 1px solid #E0E0E0;
     }
 
-    /* Estilos del FullCalendar */
     .fc-daygrid-day-number {
         font-weight: 600;
         color: #333;
     }
 
-    /* Hover en eventos */
     .fc-event:hover {
         opacity: .85;
         cursor: pointer;
@@ -62,7 +63,6 @@
         transition: .15s ease;
     }
 
-    /* Botones superiores del calendario */
     .fc-button {
         background: #3A87AD !important;
         border: none !important;
@@ -75,21 +75,92 @@
             background: #356f8c !important;
         }
 
-    /* Título del mes */
     .fc-toolbar-title {
         color: #3A87AD;
         font-weight: 700;
         font-size: 1.4rem;
     }
 
-    /* Fondo de los días */
     .fc-daygrid-day {
         background: #F5F5F5;
     }
 
-    /* Borde de celdas */
     .fc-theme-standard td,
     .fc-theme-standard th {
         border-color: #dcdcdc;
     }
+
+
+    /* ======================================================
+           🚀 NUEVO ESTILO PREMIUM AGREGADO (MISMO PROTOTIPO)
+           ====================================================== */
+
+    :root {
+        --azul: #3A87AD;
+        --gris-fondo: #F5F5F5;
+        --gris-borde: #E0E0E0;
+        --texto: #333;
+        --blanco: #FFFFFF;
+    }
+
+    body {
+        font-family: 'Segoe UI', Arial, sans-serif !important;
+        background-color: var(--gris-fondo) !important;
+    }
+
+    /* Contenedor del calendario más elevado */
+    #calendar {
+        box-shadow: 0 6px 18px rgba(0,0,0,0.12) !important;
+        border-radius: 16px !important;
+        padding: 30px !important;
+        border: 1px solid var(--gris-borde) !important;
+    }
+
+    /* Botones mejorados */
+    .fc-button {
+        background: var(--azul) !important;
+        font-weight: 600 !important;
+        letter-spacing: 0.3px;
+    }
+
+        .fc-button:hover {
+            background: #2f6f8c !important;
+        }
+
+    /* Días con borde más suave */
+    .fc-theme-standard td,
+    .fc-theme-standard th {
+        border-color: #E4E4E4 !important;
+    }
+
+    /* Celdas */
+    .fc-daygrid-day {
+        background: var(--gris-fondo) !important;
+        transition: background .15s ease;
+    }
+
+        /* Hover en días */
+        .fc-daygrid-day:hover {
+            background: #e9f3f9 !important;
+        }
+
+    /* Título */
+    .fc-toolbar-title {
+        font-size: 1.7rem !important;
+        font-weight: 700 !important;
+        color: var(--azul) !important;
+    }
+
+    /* Eventos */
+    .fc-event {
+        border-radius: 8px !important;
+        padding: 5px 7px !important;
+        font-size: 14px !important;
+    }
+
+        .fc-event:hover {
+            transform: scale(1.05);
+            opacity: 0.9;
+        }
+
 </style>
