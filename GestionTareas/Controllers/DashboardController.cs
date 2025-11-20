@@ -101,8 +101,18 @@ namespace GestionTareas.Controllers
         // ========================================
         public IActionResult GetProyectosAsEvents()
         {
-            // ⭐ PROYECTOS
-            var proyectos = db.Proyecto.ToList();
+            int? usuarioID = HttpContext.Session.GetInt32("UsuarioID");
+            if (usuarioID == null) return Unauthorized();
+
+            var equiposUsuario = db.EquipoMiembro
+                .Where(x => x.UsuarioID == usuarioID)
+                .Select(x => x.EquipoID)
+                .ToList();
+
+            // ⭐ PROYECTOS RELACIONADOS
+            var proyectos = db.Proyecto
+                .Where(p => equiposUsuario.Contains(p.EquipoID))
+                .ToList();
 
             var eventosProyectos = proyectos.Select(p => new EventoCalendario
             {
@@ -117,30 +127,32 @@ namespace GestionTareas.Controllers
                 url = Url.Action("Details", "Proyectos", new { id = p.ProyectoID })
             }).ToList();
 
-
-            // ⭐ TAREAS
-            var tareas = db.Set<Tarea>().ToList();
+            // ⭐ TAREAS RELACIONADAS
+            var tareas = db.Tarea
+                .Include(t => t.Proyecto)
+                .Where(t => equiposUsuario.Contains(t.Proyecto.EquipoID))
+                .ToList();
 
             var eventosTareas = tareas.Select(t => new EventoCalendario
             {
-                id = t.TareaID + 50000, // evitar choque de IDs con proyectos
+                id = t.TareaID + 50000,
                 title = "[Tarea] " + t.Titulo,
-                start = t.FechaInicio?.ToString("yyyy-MM-dd") ?? "2025-01-01",
+                start = t.FechaInicio.HasValue
+            ? t.FechaInicio.Value.ToString("yyyy-MM-dd")
+            : DateTime.Now.ToString("yyyy-MM-dd"),
                 end = t.FechaFin.HasValue
-                        ? t.FechaFin.Value.AddDays(1).ToString("yyyy-MM-dd")
-                        : t.FechaInicio?.AddDays(1).ToString("yyyy-MM-dd") ?? "2025-01-02",
+            ? t.FechaFin.Value.AddDays(1).ToString("yyyy-MM-dd")
+            : (t.FechaInicio.HasValue
+                ? t.FechaInicio.Value.AddDays(1).ToString("yyyy-MM-dd")
+                : DateTime.Now.AddDays(1).ToString("yyyy-MM-dd")),
                 allDay = true,
-                color = "#8E44AD",  // Morado para diferenciar tareas
-                url = Url.Action("Details", "Tareas", new { id = t.TareaID })
+                color = "#8E44AD",
+                url = Url.Action("Comentarios", "Tareas", new { tareaId = t.TareaID })
             }).ToList();
 
 
-            // ⭐ UNIR PROYECTOS + TAREAS
-            var todosEventos = eventosProyectos.Concat(eventosTareas).ToList();
-
-            return Json(todosEventos);
+            return Json(eventosProyectos.Concat(eventosTareas).ToList());
         }
-
 
 
 
