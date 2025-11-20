@@ -5,11 +5,11 @@ namespace GestionTareas.Models;
 
 public partial class EquipoMiembro
 {
-    public int EquipoMiembroId { get; set; }
+    public int EquipoMiembroID { get; set; }
 
-    public int EquipoId { get; set; }
+    public int EquipoID { get; set; }
 
-    public int UsuarioId { get; set; }
+    public int UsuarioID { get; set; }
 
     public string? RolEnEquipo { get; set; }
 

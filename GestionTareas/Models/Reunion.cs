@@ -5,9 +5,9 @@ namespace GestionTareas.Models;
 
 public partial class Reunion
 {
-    public int ReunionId { get; set; }
+    public int ReunionID { get; set; }
 
-    public int ProyectoId { get; set; }
+    public int ProyectoID { get; set; }
 
     public string Titulo { get; set; } = null!;
 

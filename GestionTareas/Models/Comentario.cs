@@ -1,17 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace GestionTareas.Models;
 
 public partial class Comentario
 {
-    public int ComentarioId { get; set; }
+    public int ComentarioID { get; set; }
 
-    public int TareaId { get; set; }
+    public int TareaID { get; set; }
 
-    public int UsuarioId { get; set; }
+    public int UsuarioID { get; set; }
 
-    public string ComentarioTexto { get; set; } = null!;
+    [Column("Comentario")]   //Mapea la propiedad al nombre real de SQL
+    public string TextoComentario { get; set; } = null!;
 
     public DateTime FechaComentario { get; set; }
 

@@ -5,7 +5,7 @@ namespace GestionTareas.Models;
 
 public partial class Rol
 {
-    public int RolId { get; set; }
+    public int RolID { get; set; }
 
     public string Nombre { get; set; } = null!;
 

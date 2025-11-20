@@ -5,11 +5,11 @@ namespace GestionTareas.Models;
 
 public partial class Reporte
 {
-    public int ReporteId { get; set; }
+    public int ReporteID { get; set; }
 
-    public int ProyectoId { get; set; }
+    public int ProyectoID { get; set; }
 
-    public int UsuarioId { get; set; }
+    public int UsuarioID { get; set; }
 
     public string? TipoReporte { get; set; }
 

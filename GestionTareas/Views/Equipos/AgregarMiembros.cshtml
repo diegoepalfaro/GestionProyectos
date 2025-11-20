@@ -1,0 +1,58 @@
+﻿@{
+    ViewBag.Title = "Administrar equipo";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Equipo: @ViewBag.NombreEquipo</h2>
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+
+<!-- Formulario agregar miembro -->
+<form asp-action="AgregarMiembro" method="post" style="margin-bottom:30px;">
+    <input type="hidden" name="EquipoID" value="@ViewBag.EquipoID" />
+    <label>Correo del usuario</label>
+    <input type="email" name="Email" class="form-control" required />
+    <button class="btn btn-success mt-2">Agregar al equipo</button>
+</form>
+
+<!-- Tabla miembros -->
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>Nombre</th>
+            <th>Email</th>
+            <th>Rol</th>
+            <th>Acción</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var m in (IEnumerable<dynamic>)ViewBag.Miembros)
+        {
+            <tr>
+                <td>@m.Nombre</td>
+                <td>@m.Email</td>
+                <td>@m.RolEnEquipo</td>
+                <td>
+                    @if ((bool)ViewBag.EsLider)
+                    {
+                        <form asp-action="CambiarRol" method="post" style="display:inline;">
+                            <input type="hidden" name="EquipoMiembroID" value="@m.EquipoMiembroID" />
+                            <button type="submit" class="btn btn-sm btn-primary">Cambiar rol</button>
+                        </form>
+                    }
+                    else
+                    {
+                        <span>-</span>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

@@ -5,7 +5,7 @@ namespace GestionTareas.Models;
 
 public partial class Usuario
 {
-    public int UsuarioId { get; set; }
+    public int UsuarioID { get; set; }
 
     public string Nombre { get; set; } = null!;
 
