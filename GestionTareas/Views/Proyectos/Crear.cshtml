@@ -1,47 +1,134 @@
 ﻿@model GestionTareas.Models.Proyecto
 
-<h2>Crear Proyecto</h2>
+<h2 class="titulo-proyecto">Crear Proyecto</h2>
 
 @using (Html.BeginForm("Create", "Proyectos", FormMethod.Post))
 {
     @Html.AntiForgeryToken()
 
-    <div class="form-group">
-        <label>Nombre</label>
-        @Html.TextBoxFor(m => m.Nombre, new { @class = "form-control" })
+    <div class="form-proyecto">
+
+        <div class="form-group">
+            <label class="label-proyecto">Nombre</label>
+            @Html.TextBoxFor(m => m.Nombre, new { @class = "form-control campo-proyecto" })
+        </div>
+
+        <div class="form-group">
+            <label class="label-proyecto">Descripción</label>
+            @Html.TextAreaFor(m => m.Descripcion, new { @class = "form-control campo-proyecto" })
+        </div>
+
+        <div class="form-group">
+            <label class="label-proyecto">Fecha Inicio</label>
+            @Html.TextBoxFor(m => m.FechaInicio, new { @class = "form-control campo-proyecto", type = "date" })
+        </div>
+
+        <div class="form-group">
+            <label class="label-proyecto">Fecha Fin</label>
+            @Html.TextBoxFor(m => m.FechaFin, new { @class = "form-control campo-proyecto", type = "date" })
+        </div>
+
+        <div class="form-group">
+            <label class="label-proyecto">Estado</label>
+            @Html.DropDownListFor(m => m.Estado, new List<SelectListItem>
+            {
+                new SelectListItem { Text = "Pendiente", Value = "Pendiente" },
+                new SelectListItem { Text = "En Progreso", Value = "En Progreso", Selected = true },
+                new SelectListItem { Text = "Completado", Value = "Completado" }
+                }, new { @class = "form-control campo-proyecto" })
     </div>
 
     <div class="form-group">
-        <label>Descripción</label>
-        @Html.TextAreaFor(m => m.Descripcion, new { @class = "form-control" })
-    </div>
-
-    <div class="form-group">
-        <label>Fecha Inicio</label>
-        @Html.TextBoxFor(m => m.FechaInicio, new { @class = "form-control", type = "date" })
-    </div>
-
-    <div class="form-group">
-        <label>Fecha Fin</label>
-        @Html.TextBoxFor(m => m.FechaFin, new { @class = "form-control", type = "date" })
-    </div>
-
-    <div class="form-group">
-        <label>Estado</label>
-        @Html.DropDownListFor(m => m.Estado, new List<SelectListItem>
-        {
-        new SelectListItem { Text = "Pendiente", Value = "Pendiente" },
-        new SelectListItem { Text = "En Progreso", Value = "En Progreso", Selected = true },
-        new SelectListItem { Text = "Completado", Value = "Completado" }
-        }, new { @class = "form-control" })
-    </div>
-
-
-    <div class="form-group">
-        <label>Equipo</label>
+        <label class="label-proyecto">Equipo</label>
         @Html.DropDownListFor(m => m.EquipoID, (SelectList)ViewBag.Equipos,
-                "Seleccione un equipo", new { @class = "form-control" })
+                "Seleccione un equipo", new { @class = "form-control campo-proyecto" })
     </div>
 
-    <button type="submit" class="btn btn-success mt-3">Guardar</button>
+    <button type="submit" class="btn-guardar-proyecto mt-3">Guardar</button>
+</div>
 }
+
+<style>
+
+    /* ======================================
+           🎨 PALETA CORPORATIVA
+           ====================================== */
+    :root {
+        --azul: #3A87AD;
+        --azul-hover: #2f6f8c;
+        --gris-fondo: #F5F5F5;
+        --gris-borde: #E0E0E0;
+        --blanco: #FFFFFF;
+        --texto: #333;
+        --sombra: 0 4px 14px rgba(0,0,0,0.12);
+    }
+
+    body {
+        background: var(--gris-fondo);
+        font-family: 'Segoe UI', Arial, sans-serif !important;
+    }
+
+    /* ======================================
+           🏷️ TÍTULO
+           ====================================== */
+    .titulo-proyecto {
+        font-size: 28px;
+        font-weight: 700;
+        color: var(--texto);
+        margin-bottom: 25px;
+    }
+
+    /* ======================================
+           📦 TARJETA FORMULARIO
+           ====================================== */
+    .form-proyecto {
+        width: 55%;
+        background: var(--blanco);
+        padding: 28px;
+        border-radius: 14px;
+        border: 1px solid var(--gris-borde);
+        box-shadow: var(--sombra);
+    }
+
+    .label-proyecto {
+        font-weight: 600;
+        margin-bottom: 6px;
+        display: block;
+        color: var(--texto);
+    }
+
+    .campo-proyecto {
+        padding: 10px !important;
+        border-radius: 8px !important;
+        border: 1px solid var(--gris-borde) !important;
+        margin-bottom: 15px;
+        font-size: 15px !important;
+    }
+
+        .campo-proyecto:focus {
+            border-color: var(--azul) !important;
+            box-shadow: 0 0 4px rgba(58, 135, 173, 0.4);
+            outline: none;
+        }
+
+    /* ======================================
+           🟦 BOTÓN GUARDAR
+           ====================================== */
+    .btn-guardar-proyecto {
+        background: var(--azul) !important;
+        color: white !important;
+        padding: 12px 20px;
+        border: none;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: var(--sombra);
+        transition: .2s ease;
+    }
+
+        .btn-guardar-proyecto:hover {
+            background: var(--azul-hover) !important;
+        }
+
+</style>
