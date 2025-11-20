@@ -1,83 +1,95 @@
-﻿<style>
-    /* PALETA DEL PROTOTIPO */
-    :root {
-        --azul: #3A87AD;
-        --gris-fondo: #F5F5F5;
-        --gris-borde: #E0E0E0;
-        --texto: #333333;
-        --blanco: #FFFFFF;
-    }
+﻿@{
+    ViewData["Title"] = "Calendario";
+}
 
-    h2 {
-        text-align: center;
-        font-size: 28px;
-        font-weight: 700;
-        margin-top: 10px;
-        margin-bottom: 25px;
-        color: var(--texto);
-    }
+<h2 style="color:#3A87AD; font-weight:700; margin-bottom:15px;">
+    Calendario de Proyectos y Tareas
+</h2>
 
-    /* 📌 Tarjeta del calendario con estilo del prototipo */
+<!-- FullCalendar -->
+<link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+
+<div id="calendar"></div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+
+        var calendarEl = document.getElementById('calendar');
+
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridMonth',
+            locale: 'es',
+            height: 'auto',
+
+            events: '/Dashboard/GetProyectosAsEvents',
+
+            eventClick: function (info) {
+                if (info.event.url) {
+                    window.location.href = info.event.url;
+                }
+                info.jsEvent.preventDefault();
+            }
+        });
+
+        calendar.render();
+    });
+</script>
+
+<style>
+    /* Fondo general del contenedor */
     #calendar {
-        background: var(--blanco) !important;
-        padding: 28px !important;
-        border-radius: 14px !important;
-        max-width: 1100px !important;
-        margin: 30px auto !important;
-        border: 1px solid var(--gris-borde) !important;
-        box-shadow: 0 4px 14px rgba(0,0,0,0.12) !important;
+        background: #FFFFFF;
+        padding: 25px;
+        border-radius: 14px;
+        box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+        max-width: 1100px;
+        margin: 25px auto;
+        border: 1px solid #E0E0E0;
     }
 
-    /* 📅 Estilo del título del mes */
-    .fc-toolbar-title {
-        color: var(--azul);
-        font-size: 1.6rem;
-        font-weight: 700;
+    /* Estilos del FullCalendar */
+    .fc-daygrid-day-number {
+        font-weight: 600;
+        color: #333;
     }
 
-    /* 🔵 Botones superiores */
+    /* Hover en eventos */
+    .fc-event:hover {
+        opacity: .85;
+        cursor: pointer;
+        transform: scale(1.02);
+        transition: .15s ease;
+    }
+
+    /* Botones superiores del calendario */
     .fc-button {
-        background: var(--azul) !important;
+        background: #3A87AD !important;
         border: none !important;
         border-radius: 6px !important;
-        color: white !important;
-        font-size: 14px !important;
-        font-weight: 600 !important;
         padding: 6px 12px !important;
-        transition: 0.2s;
+        font-size: 14px !important;
     }
 
         .fc-button:hover {
-            background: #2f6f8c !important;
+            background: #356f8c !important;
         }
 
-    /* 📦 Fondo de celdas del calendario */
+    /* Título del mes */
+    .fc-toolbar-title {
+        color: #3A87AD;
+        font-weight: 700;
+        font-size: 1.4rem;
+    }
+
+    /* Fondo de los días */
     .fc-daygrid-day {
-        background: var(--gris-fondo) !important;
+        background: #F5F5F5;
     }
 
-    .fc-daygrid-day-number {
-        color: var(--texto) !important;
-        font-weight: 600;
-    }
-
-    /* 🧩 Líneas */
+    /* Borde de celdas */
     .fc-theme-standard td,
     .fc-theme-standard th {
-        border-color: var(--gris-borde) !important;
+        border-color: #dcdcdc;
     }
-
-    /* 🎯 Estilo de eventos */
-    .fc-event {
-        border-radius: 6px !important;
-        padding: 4px 6px !important;
-        font-size: 14px !important;
-        border: none !important;
-        transition: .2s ease-in-out;
-    }
-
-        .fc-event:hover {
-            opacity: 0.85;
-            transform: scale(1.03);
-        }
 </style>
