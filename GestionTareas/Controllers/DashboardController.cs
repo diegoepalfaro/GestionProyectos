@@ -1,6 +1,4 @@
-﻿// Archivo: Controllers/DashboardController.cs
-using GestionTareas.Models;
-//using GestionTareas.ViewModels; // Necesitas esta referencia
+﻿using GestionTareas.Models;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
@@ -9,67 +7,101 @@ namespace GestionTareas.Controllers
 {
     public class DashboardController : Controller
     {
+        // 💡 CORRECCIÓN IMPORTANTE:
+        // Tu DbContext real se llama GESTIONPROYECTOSDBCONTEXT, NO GestionProyectosContext.
+        private readonly GestionProyectosDbContext _db;
+
+        // ✔ Inyección correcta del contexto
+        public DashboardController(GestionProyectosDbContext db)
+        {
+            _db = db;
+        }
+
         public ActionResult Index()
         {
-            // La lógica real de la aplicación llenaría este modelo con datos de la BD
             var model = new DashboardViewModel
             {
                 ProyectosPendientes = 12,
                 ProyectosEnProceso = 7,
                 ProyectosCompletados = 18,
 
-                ProximosEventos = new List<Models.EventoDashboardViewModel>
+                ProximosEventos = new List<EventoDashboardViewModel>
                 {
-                    new Models.EventoDashboardViewModel { Descripcion = "Reunión de equipo", Fecha = "19/09/2025" },
-                    new Models.EventoDashboardViewModel { Descripcion = "Entrega de prototipo", Fecha = "23/09/2025" },
-                    new Models.EventoDashboardViewModel { Descripcion = "Presentación al cliente", Fecha = "09/10/2025" }
+                    new EventoDashboardViewModel { Descripcion = "Reunión de equipo", Fecha = "19/09/2025" },
+                    new EventoDashboardViewModel { Descripcion = "Entrega de prototipo", Fecha = "23/09/2025" },
+                    new EventoDashboardViewModel { Descripcion = "Presentación al cliente", Fecha = "09/10/2025" }
                 }
             };
 
             return View(model);
         }
-        private GestionProyectosContext db = new GestionProyectosContext(); // Reemplaza 'YourDbContext' con tu contexto de base de datos real
 
-        // Acción principal para la vista de calendario
+
+        // ================================
+        //        VISTA DEL CALENDARIO
+        // ================================
         public ActionResult Calendario()
         {
             return View();
         }
 
-        // Acción que devuelve los datos de los proyectos en formato JSON para FullCalendar
+
+
+        // ========================================
+        //   PROYECTOS + TAREAS EN UN SOLO JSON
+        // ========================================
         public IActionResult GetProyectosAsEvents()
         {
-            // 1. Obtener los proyectos de tu base de datos
-            var proyectos = db.Proyectos.ToList();
+            // ⭐ PROYECTOS
+            var proyectos = _db.Proyecto.ToList();
 
-            // 2. Mapear los Proyectos a la estructura de CalendarEvent
-            var eventos = proyectos.Select(p => new EventoCalendario
+            var eventosProyectos = proyectos.Select(p => new EventoCalendario
             {
                 id = p.ProyectoId,
-                title = p.Nombre,
-                // Convertir DateTime a formato ISO 8601 (necesario para FullCalendar)
+                title = "[Proyecto] " + p.Nombre,
                 start = p.FechaInicio.ToString("yyyy-MM-dd"),
-                // Para eventos de día completo, FullCalendar espera que la fecha final sea **el día después** del final real.
-                // Si FechaFin es nula, usamos FechaInicio. Si no, le sumamos un día.
-                end = p.FechaFin.HasValue ? p.FechaFin.Value.AddDays(1).ToString("yyyy-MM-dd") : p.FechaInicio.AddDays(1).ToString("yyyy-MM-dd"),
+                end = p.FechaFin.HasValue
+                        ? p.FechaFin.Value.AddDays(1).ToString("yyyy-MM-dd")
+                        : p.FechaInicio.AddDays(1).ToString("yyyy-MM-dd"),
                 allDay = true,
-                // Establecer color basado en el estado (opcional)
                 color = GetColorByEstado(p.Estado),
-                // Crear una URL para que el evento sea clickeable (ej. redirigir a la vista de detalles del proyecto)
                 url = Url.Action("Details", "Proyectos", new { id = p.ProyectoId })
             }).ToList();
 
-            // 3. Devolver los eventos como JSON
-            return Json(eventos);
+
+            // ⭐ TAREAS
+            var tareas = _db.Set<Tarea>().ToList();
+
+            var eventosTareas = tareas.Select(t => new EventoCalendario
+            {
+                id = t.TareaId + 50000, // evitar choque de IDs con proyectos
+                title = "[Tarea] " + t.Titulo,
+                start = t.FechaInicio?.ToString("yyyy-MM-dd") ?? "2025-01-01",
+                end = t.FechaFin.HasValue
+                        ? t.FechaFin.Value.AddDays(1).ToString("yyyy-MM-dd")
+                        : t.FechaInicio?.AddDays(1).ToString("yyyy-MM-dd") ?? "2025-01-02",
+                allDay = true,
+                color = "#8E44AD",  // Morado para diferenciar tareas
+                url = Url.Action("Details", "Tareas", new { id = t.TareaId })
+            }).ToList();
+
+
+            // ⭐ UNIR PROYECTOS + TAREAS
+            var todosEventos = eventosProyectos.Concat(eventosTareas).ToList();
+
+            return Json(todosEventos);
         }
 
-        // Método auxiliar para asignar un color
+
+
+
+        // Método auxiliar para asignar un color según estado del proyecto
         private string GetColorByEstado(string estado)
         {
-            if (estado == "Completado") return "#4CAF50"; // Verde
-            if (estado == "En Progreso") return "#FFC107"; // Amarillo
-            if (estado == "Atrasado") return "#F44336"; // Rojo
-            return "#3a87ad"; // Azul por defecto
+            if (estado == "Completado") return "#4CAF50";
+            if (estado == "En Progreso") return "#FFC107";
+            if (estado == "Atrasado") return "#F44336";
+            return "#3a87ad";
         }
     }
 }

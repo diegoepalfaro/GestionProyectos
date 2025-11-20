@@ -11,5 +11,8 @@ namespace GestionTareas.Models
         public DbSet<GestionTareas.Models.Archivo> Archivo { get; set; } = default!;
 
 
+        public DbSet<Tarea> Tarea { get; set; } = default!;  // <-- NECESARIO PARA EL CALENDARIO
+
+
     }
 }

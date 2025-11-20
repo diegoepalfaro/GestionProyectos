@@ -1,56 +1,45 @@
-﻿@* Archivo: Views/Proyectos/Calendario.cshtml *@
-
-@{
-    ViewBag.Title = "Calendario de Proyectos";
+﻿@{
+    ViewData["Title"] = "Calendario";
 }
 
-<h2>Calendario de Proyectos</h2>
+<h2>Calendario de Proyectos y Tareas</h2>
 
-<div id="calendar" style="max-width: 900px; margin: 40px auto;"></div>
+<!-- Estilos y scripts de FullCalendar 6 -->
+<link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
 
+<div id="calendar" style="max-width: 1000px; margin: 20px auto;"></div>
 
-@section scripts {
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
 
-    <script>
-        $(document).ready(function () {
+        var calendarEl = document.getElementById('calendar');
 
-            // Inicializar el calendario
-            $('#calendar').fullCalendar({
-                header: {
-                    left: 'prev,next today',
-                    center: 'title',
-                    right: 'month,agendaWeek,agendaDay' // Vistas disponibles
-                },
-                defaultView: 'month', // Vista por defecto (similar a tu imagen)
-                locale: 'es', // Usar idioma español
-                editable: false, // Permite arrastrar y redimensionar eventos (cambiar a true si lo necesitas)
-                eventLimit: true, // Permite el "more" link si hay demasiados eventos
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridMonth',
+            locale: 'es',
+            height: 'auto',
 
-                // Configuración para cargar los eventos
-                events: {
-                    // Llama a la acción del controlador que devuelve los datos JSON
-                    url: '@Url.Action("GetProyectosAsEvents", "Proyectos")',
-                    type: 'GET',
-                    error: function() {
-                        alert('Hubo un error al cargar los proyectos!');
-                    }
-                },
+            // 🔥 Aquí carga tus PROYECTOS + TAREAS desde el controlador:
+            events: '/Dashboard/GetProyectosAsEvents',
 
-                // Manejador del evento clic en un proyecto
-                eventClick: function(calEvent, jsEvent, view) {
-                    // Si tienes una URL definida en tu objeto CalendarEvent (p.url)
-                    if (calEvent.url) {
-                        window.location.href = calEvent.url;
-                        return false; // Prevenir el comportamiento por defecto
-                    }
-                },
-
-                // Opcional: Personalizar cómo se ve el evento. Muestra la descripción en un tooltip.
-                eventRender: function (event, element) {
-                    element.attr('title', event.title + '\n' + '@("Fecha de Inicio: ")' + moment(event.start).format('DD-MM-YYYY') +
-                        (event.end ? '\n' + '@("Fecha de Fin: ")' + moment(event.end).subtract(1, 'days').format('DD-MM-YYYY') : ''));
+            eventClick: function (info) {
+                if (info.event.url) {
+                    window.location.href = info.event.url;
                 }
-            });
+                info.jsEvent.preventDefault();
+            }
         });
-    </script>
-}
+
+        calendar.render();
+    });
+</script>
+
+<style>
+    #calendar {
+        background: white;
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+</style>
