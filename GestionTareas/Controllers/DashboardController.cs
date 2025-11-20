@@ -25,15 +25,30 @@ namespace GestionTareas.Controllers
             var usuario = db.Usuario.FirstOrDefault(u => u.UsuarioID == usuarioID);
             ViewBag.NombreUsuario = usuario?.Nombre;
 
-            // Obtener equipos del usuario
             var equiposUsuario = db.EquipoMiembro
                 .Where(x => x.UsuarioID == usuarioID)
                 .Select(x => x.EquipoID)
                 .ToList();
 
-            // Obtener proyectos de dichos equipos
             var proyectosUsuario = db.Proyecto
                 .Where(p => equiposUsuario.Contains(p.EquipoID))
+                .ToList();
+
+            // TAREAS PRÓXIMAS POR VENCER
+            var proximasTareas = db.Tarea
+                .Include(t => t.Proyecto)
+                .Where(t => equiposUsuario.Contains(t.Proyecto.EquipoID)
+                        && t.Estado != "Completado"
+                        && t.FechaFin.HasValue
+                        && t.FechaFin > DateTime.Now)
+                .OrderBy(t => t.FechaFin)
+                .Select(t => new EventosDashboard
+                {
+                    Descripcion = $"{t.Titulo} — {t.Proyecto.Nombre}",
+                    Fecha = t.FechaFin.Value.ToString("yyyy-MM-dd"),
+                    Prioridad = t.Prioridad   // <-- Añadido
+                })
+                .Take(5)
                 .ToList();
 
             var model = new DashboardViewModel
@@ -41,19 +56,12 @@ namespace GestionTareas.Controllers
                 ProyectosPendientes = proyectosUsuario.Count(p => p.Estado == "Pendiente"),
                 ProyectosEnProceso = proyectosUsuario.Count(p => p.Estado == "En Progreso"),
                 ProyectosCompletados = proyectosUsuario.Count(p => p.Estado == "Completado"),
-                ProximosEventos = proyectosUsuario
-                    .OrderBy(p => p.FechaInicio)
-                    .Select(p => new EventosDashboard
-                    {
-                        Descripcion = p.Nombre,
-                        Fecha = p.FechaInicio.ToString("yyyy-MM-dd")
-                    })
-                    .Take(5)
-                    .ToList()
+                ProximosEventos = proximasTareas     // ahora aparecen las tareas futuras
             };
 
             return View(model);
         }
+
 
         // NUEVA ACCIÓN: listado de proyectos del usuario para elegir de cuál ver tareas
         public IActionResult SeleccionarProyecto()

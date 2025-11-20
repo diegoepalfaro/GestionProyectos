@@ -9,6 +9,19 @@
     <meta charset="utf-8" />
     <title>Dashboard</title>
     <style>
+        /* COLORES POR PRIORIDAD */
+        .evento-alta {
+            background-color: #ffb3e6;
+        }
+
+        .evento-media {
+            background-color: #fff3a3;
+        }
+
+        .evento-baja {
+            background-color: #cce7ff;
+        }
+
         html, body {
             height: 100%;
             margin: 0;
@@ -185,13 +198,20 @@
                 <tbody>
                     @if (Model.ProximosEventos != null && Model.ProximosEventos.Any())
                     {
-                        foreach (var evento in Model.ProximosEventos)
+                        @foreach (var evento in Model.ProximosEventos)
                         {
-                            <tr>
-                                <td>@evento.Descripcion</td>
+                            var clase = evento.Prioridad == "Alta" ? "evento-alta"
+                            : evento.Prioridad == "Media" ? "evento-media"
+                            : "evento-baja";
+
+                            <tr class="@clase">
+                                <td>
+                                    <b>@evento.Prioridad</b> — @evento.Descripcion
+                                </td>
                                 <td style="text-align:right;">@evento.Fecha</td>
                             </tr>
                         }
+
                     }
                     else
                     {

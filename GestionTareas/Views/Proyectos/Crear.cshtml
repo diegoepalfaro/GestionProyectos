@@ -28,8 +28,14 @@
 
     <div class="form-group">
         <label>Estado</label>
-        @Html.TextBoxFor(m => m.Estado, new { @class = "form-control", value = "En Progreso" })
+        @Html.DropDownListFor(m => m.Estado, new List<SelectListItem>
+        {
+        new SelectListItem { Text = "Pendiente", Value = "Pendiente" },
+        new SelectListItem { Text = "En Progreso", Value = "En Progreso", Selected = true },
+        new SelectListItem { Text = "Completado", Value = "Completado" }
+        }, new { @class = "form-control" })
     </div>
+
 
     <div class="form-group">
         <label>Equipo</label>

@@ -1,33 +1,95 @@
-﻿@model IEnumerable<GestionTareas.Models.Proyecto>
+﻿@model IEnumerable<dynamic>
 
-<h2>Proyectos</h2>
+@{
+    Layout = null;
+}
 
-<form method="get">
-    <input type="text" name="search" class="form-control" placeholder="Buscar proyecto..." />
-</form>
-
-<table class="table mt-3">
-    <thead>
-        <tr>
-            <th>Nombre</th>
-            <th>Fecha Inicio</th>
-            <th>Estado</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var p in Model)
-        {
-            <tr>
-                <td>@p.Nombre</td>
-                <td>@p.FechaInicio.ToString("yyyy-MM-dd")</td>
-                <td>@p.Estado</td>
-                <td>
-                    @Html.ActionLink("Detalles", "Details", new { id = p.ProyectoID })
-                </td>
-            </tr>
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        .estado-completado {
+            background: #5cb85c;
+            color: white;
+            padding: 6px;
+            border-radius: 4px;
         }
-    </tbody>
-</table>
 
-<a href="@Url.Action("Create")" class="btn btn-primary">Crear nuevo proyecto</a>
+        .estado-progreso {
+            background: #e9b645;
+            padding: 6px;
+            border-radius: 4px;
+        }
+
+        .estado-pendiente {
+            background: #e04b44;
+            padding: 6px;
+            border-radius: 4px;
+            color: white;
+        }
+
+        .btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .btn-detalles {
+            background: #0275d8;
+            color: white;
+        }
+
+        .btn-completar {
+            background: #5cb85c;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <h2>Mis Proyectos</h2>
+
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Proyecto</th>
+                <th>Equipo</th>
+                <th>Fecha Inicio</th>
+                <th>Fecha Fin</th>
+                <th>Estado</th>
+                <th>Opciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var p in Model)
+            {
+                var proyecto = p.Proyecto;
+                string estadoClase =
+                proyecto.Estado == "Completado" ? "estado-completado" :
+                proyecto.Estado == "En Progreso" ? "estado-progreso" : "estado-pendiente";
+
+                <tr>
+                    <td>@proyecto.Nombre</td>
+                    <td>@p.NombreEquipo</td>
+                    <td>@proyecto.FechaInicio?.ToString("yyyy-MM-dd")</td>
+                    <td>@proyecto.FechaFin?.ToString("yyyy-MM-dd")</td>
+                    <td class="@estadoClase">@proyecto.Estado</td>
+                    <td>
+                        <a href="/Tareas/Proyecto/@proyecto.ProyectoID">
+                            <button class="btn btn-detalles">Ver Tareas</button>
+                        </a>
+
+                        @if (proyecto.Estado != "Completado")
+                        {
+                            <button class="btn btn-completar"
+                                    onclick="if(confirm('¿Seguro que deseas marcar este proyecto como completado?')) location.href='/Proyectos/Completar/@proyecto.ProyectoID'">
+                                ✓ Completar
+                            </button>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</body>
+</html>
