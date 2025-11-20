@@ -1,9 +1,9 @@
 -- Crear la base de datos
-CREATE DATABASE GESTION_PROYECTOS;
+CREATE DATABASE GestionProyectos;
 GO
 
 -- Usar la base de datos
-USE GESTION_PROYECTOS;
+USE GestionProyectos;
 GO
 
 /* ========================
@@ -36,21 +36,6 @@ CREATE TABLE UsuarioRoles (
     FOREIGN KEY (RolID) REFERENCES Roles(RolID)
 );
 
--- Tabla de Proyectos
-CREATE TABLE Proyectos (
-    ProyectoID INT PRIMARY KEY IDENTITY(1,1),
-    Nombre NVARCHAR(200) NOT NULL,
-    Descripcion NVARCHAR(MAX),
-    FechaInicio DATE NOT NULL,
-    FechaFin DATE,
-	EquipoID INT NOT NULL,
-    Estado NVARCHAR(50) DEFAULT 'En Progreso',
-	
-	ADD CONSTRAINT FK_Proyecto_Equipo
-	FOREIGN KEY (EquipoId) REFERENCES Equipo(EquipoId);
-
-);
-
 -- Tabla de Equipos de Proyecto
 CREATE TABLE Equipos (
     EquipoID INT PRIMARY KEY IDENTITY(1,1),
@@ -58,7 +43,19 @@ CREATE TABLE Equipos (
     Descripcion NVARCHAR(255)
 );
 
--- Relación Proyecto - Equipo
+-- Tabla de Proyectos  (MODIFICADA como lo pediste)
+CREATE TABLE Proyectos (
+    ProyectoID INT PRIMARY KEY IDENTITY(1,1),
+    Nombre NVARCHAR(200) NOT NULL,
+    Descripcion NVARCHAR(MAX),
+    FechaInicio DATE NOT NULL,
+    FechaFin DATE,
+    Estado NVARCHAR(50) DEFAULT 'En Progreso',
+    EquipoID INT NOT NULL,   -- AGREGADO
+    FOREIGN KEY (EquipoID) REFERENCES Equipos(EquipoID)  -- RELACIONADO
+);
+
+-- Relación Proyecto - Equipo (tu tabla original se mantiene)
 CREATE TABLE ProyectoEquipos (
     ProyectoEquipoID INT PRIMARY KEY IDENTITY(1,1),
     ProyectoID INT NOT NULL,
@@ -85,11 +82,11 @@ CREATE TABLE EquipoMiembros (
 CREATE TABLE Tareas (
     TareaID INT PRIMARY KEY IDENTITY(1,1),
     ProyectoID INT NOT NULL,
-    AsignadoA INT NULL, -- Usuario asignado
+    AsignadoA INT NULL,
     Titulo NVARCHAR(200) NOT NULL,
     Descripcion NVARCHAR(MAX),
-    Estado NVARCHAR(50) DEFAULT 'Pendiente', -- Pendiente, En Progreso, Completada
-    Prioridad NVARCHAR(20) DEFAULT 'Media',  -- Baja, Media, Alta
+    Estado NVARCHAR(50) DEFAULT 'Pendiente',
+    Prioridad NVARCHAR(20) DEFAULT 'Media',
     FechaInicio DATE,
     FechaFin DATE,
     FOREIGN KEY (ProyectoID) REFERENCES Proyectos(ProyectoID),
@@ -114,7 +111,7 @@ CREATE TABLE Archivos (
     ProyectoID INT NULL,
     UsuarioID INT NOT NULL,
     NombreArchivo NVARCHAR(200) NOT NULL,
-    Ruta NVARCHAR(MAX) NOT NULL, -- Ruta o URL
+    Ruta NVARCHAR(MAX) NOT NULL,
     FechaSubida DATETIME DEFAULT GETDATE(),
     FOREIGN KEY (TareaID) REFERENCES Tareas(TareaID),
     FOREIGN KEY (ProyectoID) REFERENCES Proyectos(ProyectoID),
@@ -130,7 +127,7 @@ CREATE TABLE Reportes (
     ReporteID INT PRIMARY KEY IDENTITY(1,1),
     ProyectoID INT NOT NULL,
     UsuarioID INT NOT NULL,
-    TipoReporte NVARCHAR(100), -- Avance, Riesgo, Resumen
+    TipoReporte NVARCHAR(100),
     FechaGeneracion DATETIME DEFAULT GETDATE(),
     Detalles NVARCHAR(MAX),
     FOREIGN KEY (ProyectoID) REFERENCES Proyectos(ProyectoID),
@@ -153,5 +150,14 @@ CREATE TABLE ReunionesParticipantes (
     ReunionID INT NOT NULL,
     UsuarioID INT NOT NULL,
     FOREIGN KEY (ReunionID) REFERENCES Reuniones(ReunionID),
+    FOREIGN KEY (UsuarioID) REFERENCES Usuarios(UsuarioID)
+);
+
+
+CREATE TABLE TareaAsignaciones (
+    TareaAsignacionID INT PRIMARY KEY IDENTITY(1,1),
+    TareaID INT NOT NULL,
+    UsuarioID INT NOT NULL,
+    FOREIGN KEY (TareaID) REFERENCES Tareas(TareaID),
     FOREIGN KEY (UsuarioID) REFERENCES Usuarios(UsuarioID)
 );
