@@ -102,11 +102,11 @@ namespace GestionTareas.Controllers
         public IActionResult GetProyectosAsEvents()
         {
             // ⭐ PROYECTOS
-            var proyectos = _db.Proyecto.ToList();
+            var proyectos = db.Proyecto.ToList();
 
             var eventosProyectos = proyectos.Select(p => new EventoCalendario
             {
-                id = p.ProyectoId,
+                id = p.ProyectoID,
                 title = "[Proyecto] " + p.Nombre,
                 start = p.FechaInicio.ToString("yyyy-MM-dd"),
                 end = p.FechaFin.HasValue
@@ -114,16 +114,16 @@ namespace GestionTareas.Controllers
                         : p.FechaInicio.AddDays(1).ToString("yyyy-MM-dd"),
                 allDay = true,
                 color = GetColorByEstado(p.Estado),
-                url = Url.Action("Details", "Proyectos", new { id = p.ProyectoId })
+                url = Url.Action("Details", "Proyectos", new { id = p.ProyectoID })
             }).ToList();
 
 
             // ⭐ TAREAS
-            var tareas = _db.Set<Tarea>().ToList();
+            var tareas = db.Set<Tarea>().ToList();
 
             var eventosTareas = tareas.Select(t => new EventoCalendario
             {
-                id = t.TareaId + 50000, // evitar choque de IDs con proyectos
+                id = t.TareaID + 50000, // evitar choque de IDs con proyectos
                 title = "[Tarea] " + t.Titulo,
                 start = t.FechaInicio?.ToString("yyyy-MM-dd") ?? "2025-01-01",
                 end = t.FechaFin.HasValue
@@ -131,7 +131,7 @@ namespace GestionTareas.Controllers
                         : t.FechaInicio?.AddDays(1).ToString("yyyy-MM-dd") ?? "2025-01-02",
                 allDay = true,
                 color = "#8E44AD",  // Morado para diferenciar tareas
-                url = Url.Action("Details", "Tareas", new { id = t.TareaId })
+                url = Url.Action("Details", "Tareas", new { id = t.TareaID })
             }).ToList();
 
 
