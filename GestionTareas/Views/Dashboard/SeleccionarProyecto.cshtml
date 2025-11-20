@@ -1,84 +1,73 @@
-﻿@model IEnumerable<GestionTareas.Models.Proyecto>
+﻿<style>
+    :root {
+        --azul: #3A87AD;
+        --gris-fondo: #F5F5F5;
+        --gris-borde: #E0E0E0;
+        --texto: #333333;
+        --blanco: #FFFFFF;
+    }
 
-@{
-    ViewBag.Title = "Seleccionar proyecto";
-    Layout = null;
-}
+    body {
+        background-color: var(--gris-fondo) !important;
+        font-family: 'Segoe UI', Arial, sans-serif !important;
+    }
 
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8" />
-    <title>Seleccionar proyecto</title>
-    <style>
-        body { font-family: Arial, sans-serif; background-color: #e6e6e6; margin: 0; padding: 30px; }
-        h2 { margin-bottom: 20px; }
-        .tabla-proyectos {
-            width: 70%;
-            background-color: #fff;
-            border-radius: 6px;
-            border-collapse: collapse;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    h2 {
+        font-size: 26px !important;
+        font-weight: 700 !important;
+        color: var(--texto);
+        margin-bottom: 25px !important;
+    }
+
+    /* TARJETA TABLA */
+    .tabla-proyectos {
+        width: 75% !important;
+        background-color: var(--blanco) !important;
+        border-radius: 12px !important;
+        border-collapse: collapse;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.12) !important;
+        overflow: hidden;
+    }
+
+        .tabla-proyectos th {
+            background-color: var(--azul) !important;
+            color: white !important;
+            padding: 14px !important;
+            text-align: left;
+            font-weight: 600;
+            font-size: 16px;
         }
-        .tabla-proyectos th, .tabla-proyectos td {
-            padding: 12px 15px;
-            border-bottom: 1px solid #ddd;
+
+        .tabla-proyectos td {
+            padding: 16px 18px !important;
+            border-bottom: 1px solid var(--gris-borde) !important;
+            font-size: 15px;
+            color: var(--texto);
         }
+
         .tabla-proyectos tr:last-child td {
-            border-bottom: none;
+            border-bottom: none !important;
         }
-        .btn-ver {
-            display: inline-block;
-            padding: 6px 10px;
-            border-radius: 4px;
-            background-color: #007bff;
-            color: white;
-            text-decoration: none;
-            font-size: 14px;
-        }
-        .btn-ver:hover {
-            background-color: #005bbd;
-        }
-    </style>
-</head>
-<body>
-    <h2>Selecciona un proyecto para ver sus tareas</h2>
 
-    @if (Model != null && Model.Any())
-    {
-        <table class="tabla-proyectos">
-            <thead>
-                <tr>
-                    <th>Nombre</th>
-                    <th>Fecha inicio</th>
-                    <th>Estado</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var p in Model)
-                {
-                    <tr>
-                        <td>@p.Nombre</td>
-                        <td>@p.FechaInicio.ToString("yyyy-MM-dd")</td>
-                        <td>@p.Estado</td>
-                        <td>
-                            @Html.ActionLink(
-                                     "Ver tareas",
-                                     "Proyecto",
-                                     "Tareas",
-                                     new { id = p.ProyectoID },
-                                     new { @class = "btn-ver" }
-                                     )
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
+        /* Hover moderno como el prototipo */
+        .tabla-proyectos tr:hover {
+            background-color: #f0f7fb !important;
+            transition: 0.25s ease;
+        }
+
+    /* BOTÓN “Ver tareas” */
+    .btn-ver {
+        background-color: var(--azul) !important;
+        padding: 8px 12px !important;
+        border-radius: 6px !important;
+        font-weight: 600;
+        color: white !important;
+        font-size: 14px !important;
+        transition: 0.2s ease-in-out;
+        text-decoration: none !important;
     }
-    else
-    {
-        <p>No tienes proyectos asignados aún.</p>
-    }
-</body>
-</html>
+
+        .btn-ver:hover {
+            background-color: #2f6f8c !important;
+        }
+</style>

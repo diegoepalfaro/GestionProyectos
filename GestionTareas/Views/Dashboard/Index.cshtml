@@ -1,229 +1,126 @@
-﻿@model GestionTareas.Models.DashboardViewModel
-@{
-    ViewBag.Title = "Dashboard";
-    Layout = null;
-}
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8" />
-    <title>Dashboard</title>
-    <style>
-        /* COLORES POR PRIORIDAD */
-        .evento-alta {
-            background-color: #ffb3e6;
+﻿<style>
+
+    /* ===== PALETA DEL PROTOTIPO (PDF) ===== */
+    :root {
+        --azul: #3A87AD;
+        --verde: #4CAF50;
+        --amarillo: #FFC107;
+        --rojo: #F44336;
+        --gris-fondo: #F5F5F5;
+        --gris-oscuro: #595959;
+        --gris-borde: #DCDCDC;
+        --blanco: #FFFFFF;
+        --texto: #333333;
+    }
+
+    /* ===== MENÚ LATERAL ===== */
+    .menu-lateral {
+        background-color: var(--gris-oscuro) !important;
+        box-shadow: 3px 0 10px rgba(0,0,0,0.15);
+    }
+
+    .menu-superior h3 {
+        color: var(--blanco);
+        font-weight: 700;
+    }
+
+    .menu-superior ul li a {
+        color: #e6e6e6;
+        text-decoration: none;
+        font-weight: 500;
+    }
+
+        .menu-superior ul li a:hover {
+            color: var(--azul);
+            font-weight: 600;
         }
 
-        .evento-media {
-            background-color: #fff3a3;
+    /* SALUDO */
+    .usuario-saludo {
+        color: #f1f1f1 !important;
+    }
+
+    /* BOTÓN CERRAR SESIÓN */
+    .btn-logout {
+        background-color: var(--rojo) !important;
+        border-radius: 6px !important;
+        font-weight: 600;
+    }
+
+        .btn-logout:hover {
+            background-color: #d32f2f !important;
         }
 
-        .evento-baja {
-            background-color: #cce7ff;
-        }
+    /* ===== CONTENIDO ===== */
+    .contenido {
+        background-color: var(--gris-fondo);
+    }
 
-        html, body {
-            height: 100%;
-            margin: 0;
-            padding: 0;
-            font-family: Arial, sans-serif;
-            background-color: #e6e6e6;
-            overflow: hidden;
-        }
+    /* TITULOS */
+    h2 {
+        color: var(--texto);
+        font-size: 26px;
+        font-weight: 700;
+        margin-bottom: 15px;
+    }
 
-        .layout {
-            display: flex;
-            height: 100vh;
-            width: 100vw;
-        }
-
-        .menu-lateral {
-            width: 220px;
-            background-color: #595959;
-            color: white;
-            padding: 30px 25px;
-            box-sizing: border-box;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-
-        .menu-superior h3 {
-            font-size: 22px;
-            margin-bottom: 25px;
-        }
-
-        .menu-superior ul {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-
-        .menu-superior li {
-            margin: 15px 0;
-            font-size: 18px;
-            cursor: pointer;
-        }
-
-        .usuario-saludo {
-            margin-top: 40px;
-            font-size: 16px;
-            font-weight: bold;
-            color: #dcdcdc;
-        }
-
-        .btn-logout {
-            margin-top: 22px;
-            padding: 10px 14px;
-            background-color: #d9534f;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            font-size: 15px;
-            cursor: pointer;
-        }
-
-            .btn-logout:hover {
-                background-color: #c9302c;
-            }
-
-        .contenido {
-            flex: 1;
-            padding: 35px 40px;
-            overflow-y: auto;
-        }
-
-        .resumen-proyectos {
-            display: flex;
-            justify-content: left;
-            gap: 35px;
-            margin: 30px 0 50px 0;
-        }
-
-        .tarjeta {
-            width: 190px;
-            padding: 18px 0;
-            border-radius: 6px;
-            text-align: center;
-            color: white;
-            font-weight: bold;
-        }
-
-        .pendiente {
-            background-color: #e04b44;
-        }
-
-        .proceso {
-            background-color: #e9b645;
-        }
-
-        .completado {
-            background-color: #5cb85c;
-        }
+    /* ===== TARJETAS DE RESUMEN ===== */
+    .tarjeta {
+        border-radius: 12px !important;
+        padding: 22px 0 !important;
+        font-size: 18px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
 
         .tarjeta .numero {
-            font-size: 34px;
-            margin-top: 8px;
+            font-size: 36px !important;
+            font-weight: 700;
+            margin-top: 5px;
         }
 
-        .tabla-eventos {
-            width: 60%;
-            background-color: white;
-            border-radius: 6px;
-            overflow: hidden;
-            border-collapse: collapse;
+    .pendiente {
+        background-color: var(--rojo) !important;
+    }
+
+    .proceso {
+        background-color: var(--amarillo) !important;
+        color: var(--texto) !important;
+        font-weight: 700;
+    }
+
+    .completado {
+        background-color: var(--verde) !important;
+    }
+
+    /* ===== TABLA DE EVENTOS ===== */
+    .tabla-eventos {
+        width: 70% !important;
+        background-color: var(--blanco);
+        border-radius: 12px !important;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.10);
+    }
+
+        .tabla-eventos td {
+            font-size: 16px;
+            border-bottom: 1px solid var(--gris-borde) !important;
         }
 
-            .tabla-eventos td {
-                padding: 15px;
-                border-bottom: 1px solid #dcdcdc;
-                font-size: 16px;
-            }
+        .tabla-eventos tr:hover {
+            background-color: #f0f7fb;
+            transition: .2s ease-in-out;
+        }
 
-            .tabla-eventos tr:last-child td {
-                border-bottom: none;
-            }
-    </style>
-</head>
+    /* ===== COLORES DE PRIORIDAD ===== */
+    .evento-alta {
+        background-color: #ffc4c4 !important;
+    }
 
-<body>
-    <div class="layout">
+    .evento-media {
+        background-color: #fff3a3 !important;
+    }
 
-        <!-- Menú -->
-        <aside class="menu-lateral">
-            <div class="menu-superior">
-                <h3>Menu</h3>
-                <ul>
-                    <li>@Html.ActionLink("Calendario", "Calendario", "Dashboard")</li>
-                    <li>@Html.ActionLink("Proyectos", "Index", "Proyectos")</li>
-                    <li>@Html.ActionLink("Crear proyecto", "Create", "Proyectos")</li>
-                    <li>@Html.ActionLink("Equipo", "Index", "Equipos")</li>
-                    <li>@Html.ActionLink("Tareas por proyecto", "SeleccionarProyecto", "Dashboard")</li>
+    .evento-baja {
+        background-color: #cce7ff !important;
+    }
 
-                </ul>
-            </div>
-
-            <div>
-                <div class="usuario-saludo">
-                    Hola, @ViewBag.NombreUsuario 👋
-                </div>
-
-                <form asp-controller="Usuarios" asp-action="Logout" method="post">
-                    <button type="submit" class="btn-logout">Cerrar sesión</button>
-                </form>
-            </div>
-        </aside>
-
-        <!-- Contenido -->
-        <section class="contenido">
-            <h2>Resumen de proyectos</h2>
-
-            <div class="resumen-proyectos">
-                <div class="tarjeta pendiente">
-                    Pendientes
-                    <div class="numero">@Model.ProyectosPendientes</div>
-                </div>
-                <div class="tarjeta proceso">
-                    En proceso
-                    <div class="numero">@Model.ProyectosEnProceso</div>
-                </div>
-                <div class="tarjeta completado">
-                    Completados
-                    <div class="numero">@Model.ProyectosCompletados</div>
-                </div>
-            </div>
-
-            <h2>Próximos Eventos</h2>
-            <table class="tabla-eventos">
-                <tbody>
-                    @if (Model.ProximosEventos != null && Model.ProximosEventos.Any())
-                    {
-                        @foreach (var evento in Model.ProximosEventos)
-                        {
-                            var clase = evento.Prioridad == "Alta" ? "evento-alta"
-                            : evento.Prioridad == "Media" ? "evento-media"
-                            : "evento-baja";
-
-                            <tr class="@clase">
-                                <td>
-                                    <b>@evento.Prioridad</b> — @evento.Descripcion
-                                </td>
-                                <td style="text-align:right;">@evento.Fecha</td>
-                            </tr>
-                        }
-
-                    }
-                    else
-                    {
-                        <tr>
-                            <td colspan="2" style="text-align:center; padding:20px;">
-                                No hay eventos próximos registrados.
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        </section>
-    </div>
-</body>
-</html>
+</style>
