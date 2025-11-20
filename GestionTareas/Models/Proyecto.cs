@@ -5,7 +5,7 @@ namespace GestionTareas.Models;
 
 public partial class Proyecto
 {
-    public int ProyectoId { get; set; }
+    public int ProyectoID { get; set; }
 
     public string Nombre { get; set; } = null!;
 
@@ -16,6 +16,9 @@ public partial class Proyecto
     public DateTime? FechaFin { get; set; }
 
     public string? Estado { get; set; }
+
+    public int EquipoID { get; set; }
+
 
     public virtual ICollection<Archivo> Archivos { get; set; } = new List<Archivo>();
 

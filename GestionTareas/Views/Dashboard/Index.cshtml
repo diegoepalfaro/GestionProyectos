@@ -1,7 +1,7 @@
-﻿@model DashboardViewModel
+﻿@model GestionTareas.Models.DashboardViewModel
 @{
     ViewBag.Title = "Dashboard";
-    Layout = null; /* Evita que el layout principal agregue bordes, menu y margenes */
+    Layout = null;
 }
 <!DOCTYPE html>
 <html>
@@ -9,6 +9,19 @@
     <meta charset="utf-8" />
     <title>Dashboard</title>
     <style>
+        /* COLORES POR PRIORIDAD */
+        .evento-alta {
+            background-color: #ffb3e6;
+        }
+
+        .evento-media {
+            background-color: #fff3a3;
+        }
+
+        .evento-baja {
+            background-color: #cce7ff;
+        }
+
         html, body {
             height: 100%;
             margin: 0;
@@ -24,33 +37,56 @@
             width: 100vw;
         }
 
-        /* Menú lateral */
         .menu-lateral {
             width: 220px;
             background-color: #595959;
             color: white;
             padding: 30px 25px;
             box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
 
-            .menu-lateral h3 {
-                font-size: 22px;
-                margin-bottom: 25px;
+        .menu-superior h3 {
+            font-size: 22px;
+            margin-bottom: 25px;
+        }
+
+        .menu-superior ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .menu-superior li {
+            margin: 15px 0;
+            font-size: 18px;
+            cursor: pointer;
+        }
+
+        .usuario-saludo {
+            margin-top: 40px;
+            font-size: 16px;
+            font-weight: bold;
+            color: #dcdcdc;
+        }
+
+        .btn-logout {
+            margin-top: 22px;
+            padding: 10px 14px;
+            background-color: #d9534f;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 15px;
+            cursor: pointer;
+        }
+
+            .btn-logout:hover {
+                background-color: #c9302c;
             }
 
-            .menu-lateral ul {
-                list-style: none;
-                padding: 0;
-                margin: 0;
-            }
-
-            .menu-lateral li {
-                margin: 15px 0;
-                font-size: 18px;
-                cursor: pointer;
-            }
-
-        /* Contenido principal */
         .contenido {
             flex: 1;
             padding: 35px 40px;
@@ -90,7 +126,6 @@
             margin-top: 8px;
         }
 
-        /* Tabla eventos */
         .tabla-eventos {
             width: 60%;
             background-color: white;
@@ -112,19 +147,31 @@
 </head>
 
 <body>
-
     <div class="layout">
 
         <!-- Menú -->
         <aside class="menu-lateral">
-            <h3>Menu</h3>
-            <ul>
-                <li>@Html.ActionLink("Calendario", "Calendario", "Dashboard")</li>
-                <li>@Html.ActionLink("Proyectos", "Index", "Proyectos")</li>
-                <li>@Html.ActionLink("Crear proyecto", "Create", "Proyectos")</li>
-                <li>@Html.ActionLink("Equipo", "Index", "Equipos")</li>
+            <div class="menu-superior">
+                <h3>Menu</h3>
+                <ul>
+                    <li>@Html.ActionLink("Calendario", "Calendario", "Dashboard")</li>
+                    <li>@Html.ActionLink("Proyectos", "Index", "Proyectos")</li>
+                    <li>@Html.ActionLink("Crear proyecto", "Create", "Proyectos")</li>
+                    <li>@Html.ActionLink("Equipo", "Index", "Equipos")</li>
+                    <li>@Html.ActionLink("Tareas por proyecto", "SeleccionarProyecto", "Dashboard")</li>
 
-            </ul>
+                </ul>
+            </div>
+
+            <div>
+                <div class="usuario-saludo">
+                    Hola, @ViewBag.NombreUsuario 👋
+                </div>
+
+                <form asp-controller="Usuarios" asp-action="Logout" method="post">
+                    <button type="submit" class="btn-logout">Cerrar sesión</button>
+                </form>
+            </div>
         </aside>
 
         <!-- Contenido -->
@@ -136,35 +183,47 @@
                     Pendientes
                     <div class="numero">@Model.ProyectosPendientes</div>
                 </div>
-
                 <div class="tarjeta proceso">
                     En proceso
                     <div class="numero">@Model.ProyectosEnProceso</div>
                 </div>
-
                 <div class="tarjeta completado">
                     Completados
                     <div class="numero">@Model.ProyectosCompletados</div>
                 </div>
             </div>
 
-            <h2>Proximos Eventos</h2>
-
+            <h2>Próximos Eventos</h2>
             <table class="tabla-eventos">
                 <tbody>
-                    @foreach (var evento in Model.ProximosEventos)
+                    @if (Model.ProximosEventos != null && Model.ProximosEventos.Any())
+                    {
+                        @foreach (var evento in Model.ProximosEventos)
+                        {
+                            var clase = evento.Prioridad == "Alta" ? "evento-alta"
+                            : evento.Prioridad == "Media" ? "evento-media"
+                            : "evento-baja";
+
+                            <tr class="@clase">
+                                <td>
+                                    <b>@evento.Prioridad</b> — @evento.Descripcion
+                                </td>
+                                <td style="text-align:right;">@evento.Fecha</td>
+                            </tr>
+                        }
+
+                    }
+                    else
                     {
                         <tr>
-                            <td>@evento.Descripcion</td>
-                            <td style="text-align:right;">@evento.Fecha</td>
+                            <td colspan="2" style="text-align:center; padding:20px;">
+                                No hay eventos próximos registrados.
+                            </td>
                         </tr>
                     }
                 </tbody>
             </table>
-
         </section>
-
     </div>
-
 </body>
 </html>

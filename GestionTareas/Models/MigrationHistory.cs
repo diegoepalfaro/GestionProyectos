@@ -5,7 +5,7 @@ namespace GestionTareas.Models;
 
 public partial class MigrationHistory
 {
-    public string MigrationId { get; set; } = null!;
+    public string MigrationID { get; set; } = null!;
 
     public string ContextKey { get; set; } = null!;
 

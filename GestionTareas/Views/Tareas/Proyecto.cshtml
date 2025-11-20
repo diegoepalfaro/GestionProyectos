@@ -1,0 +1,278 @@
+﻿@model List<GestionTareas.Models.Tarea>
+
+@{
+    Layout = null;
+    bool esLider = ViewBag.EsLider == true;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Tareas – @ViewBag.ProyectoNombre</title>
+
+    <style>
+        body {
+            font-family: Arial;
+            margin: 0;
+            padding: 0;
+            background: #eaeaea;
+        }
+
+        .header {
+            background: #444;
+            color: white;
+            padding: 20px;
+            font-size: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+            .header a {
+                color: white;
+                text-decoration: none;
+                font-size: 14px;
+            }
+
+        .contenedor {
+            display: flex;
+            gap: 30px;
+            padding: 30px;
+        }
+
+        .columna {
+            width: 33%;
+            background: #fff;
+            padding: 15px;
+            border-radius: 6px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+        }
+
+            .columna h2 {
+                text-align: center;
+                margin-bottom: 15px;
+            }
+
+        .tarea {
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 12px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+        }
+
+            /* 🔥 COLORES POR PRIORIDAD */
+            .tarea.alta {
+                background-color: #ffb3e6;
+            }
+            /* Lila / rosado */
+            .tarea.media {
+                background-color: #fff3a3;
+            }
+            /* Amarillo */
+            .tarea.baja {
+                background-color: #cce7ff;
+            }
+        /* Celeste */
+
+        .prioridad {
+            font-size: 12px;
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+
+        .botones button {
+            margin-top: 8px;
+            width: 100%;
+            padding: 6px;
+            border: none;
+            cursor: pointer;
+            border-radius: 4px;
+            background: #333;
+            color: white;
+        }
+
+        .btn-crear {
+            margin: 20px;
+            padding: 10px 18px;
+            border: none;
+            border-radius: 5px;
+            background: #007bff;
+            color: white;
+            cursor: pointer;
+        }
+
+        .modal-container {
+            padding: 25px;
+        }
+
+        .link-comentarios {
+            display: inline-block;
+            margin-top: 6px;
+            font-size: 13px;
+            color: #004080;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        Proyecto → @ViewBag.ProyectoNombre
+        <a href="/Dashboard/Index">Volver al Dashboard</a>
+    </div>
+
+    @if (esLider)
+    {
+        <button onclick="document.getElementById('crear').style.display='block'" class="btn-crear">
+            + Nueva tarea
+        </button>
+    }
+
+    <div class="contenedor">
+        <!-- ------------------ PENDIENTE ------------------ -->
+        <div class="columna">
+            <h2>Pendiente</h2>
+            @foreach (var t in Model.Where(x => x.Estado == "Pendiente"))
+            {
+                <div class="tarea @(t.Prioridad == "Alta" ? "alta" : (t.Prioridad == "Media" ? "media" : "baja"))"
+                     data-id="@t.TareaID" draggable="true">
+                    <div class="prioridad">@t.Prioridad</div>
+                    <b>@t.Titulo</b> <br />
+                    @t.Descripcion
+                    <br />
+                    <a class="link-comentarios" href="@Url.Action("Comentarios","Tareas", new { tareaId = t.TareaID })">
+                        💬 Ver comentarios
+                    </a>
+
+                    @if (esLider)
+                    {
+                        <div class="botones">
+                            <a href="/Tareas/CambiarEstado?tareaId=@t.TareaID&nuevoEstado=En Progreso">
+                                <button>→ En Progreso</button>
+                            </a>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+
+        <!-- ------------------ EN PROGRESO ------------------ -->
+        <div class="columna">
+            <h2>En Progreso</h2>
+            @foreach (var t in Model.Where(x => x.Estado == "En Progreso"))
+            {
+                <div class="tarea @(t.Prioridad == "Alta" ? "alta" : (t.Prioridad == "Media" ? "media" : "baja"))"
+                     data-id="@t.TareaID" draggable="true">
+                    <div class="prioridad">@t.Prioridad</div>
+                    <b>@t.Titulo</b> <br />
+                    @t.Descripcion
+                    <br />
+                    <a class="link-comentarios" href="@Url.Action("Comentarios","Tareas", new { tareaId = t.TareaID })">
+                        💬 Ver comentarios
+                    </a>
+
+                    @if (esLider)
+                    {
+                        <div class="botones">
+                            <a href="/Tareas/CambiarEstado?tareaId=@t.TareaID&nuevoEstado=Completado">
+                                <button>✔ Completar</button>
+                            </a>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+
+        <!-- ------------------ COMPLETADO ------------------ -->
+        <div class="columna">
+            <h2>Completado</h2>
+            @foreach (var t in Model.Where(x => x.Estado == "Completado"))
+            {
+                <div class="tarea @(t.Prioridad == "Alta" ? "alta" : (t.Prioridad == "Media" ? "media" : "baja"))"
+                     data-id="@t.TareaID" draggable="true">
+                    <div class="prioridad">@t.Prioridad</div>
+                    <b>@t.Titulo</b> <br />
+                    @t.Descripcion
+                    <br />
+                    <a class="link-comentarios" href="@Url.Action("Comentarios","Tareas", new { tareaId = t.TareaID })">
+                        💬 Ver comentarios
+                    </a>
+                    @if (esLider)
+                    {
+                        <form method="post" action="/Tareas/ActualizarFechaFin">
+                            <input type="hidden" name="TareaID" value="@t.TareaID" />
+                            <label style="font-size:12px;">Fecha fin:</label>
+                            <input type="date" name="FechaFin"
+                                   value="@t.FechaFin?.ToString("yyyy-MM-dd")"
+                                   style="width:100%; margin-top:4px;" />
+                            <button style="width:100%; margin-top:4px; font-size:12px;">✔ Guardar fecha</button>
+                        </form>
+                    }
+
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- --------- MODAL PARA CREAR TAREA --------- -->
+    <div id="crear" style="display:none; background:white; position:fixed; top:20%; left:35%; width:30%; border:1px solid #ccc; border-radius:6px; box-shadow:0 4px 12px rgba(0,0,0,0.4);">
+        <div class="modal-container">
+            <form method="post" action="/Tareas/Crear">
+                <input type="hidden" name="ProyectoID" value="@ViewBag.ProyectoID" />
+
+                <label>Título</label><br />
+                <input name="Titulo" required /><br /><br />
+
+                <label>Descripción</label><br />
+                <textarea name="Descripcion"></textarea><br /><br />
+
+                <label>Prioridad</label><br />
+                <select name="Prioridad">
+                    <option>Alta</option>
+                    <option>Media</option>
+                    <option>Baja</option>
+                </select><br /><br />
+
+                <label>Fecha de fin</label><br />
+                <input type="date" name="FechaFin" /><br /><br />
+
+                <label>Asignar a usuario</label><br />
+                <select name="AsignadoA">
+                    <option value="">— Sin asignar —</option>
+                    @foreach (var u in ViewBag.UsuariosEquipo)
+                    {
+                        <option value="@u.UsuarioID">@u.Nombre (@u.Email)</option>
+                    }
+                </select><br /><br />
+
+                <button type="submit">Guardar</button>
+            </form>
+            <button onclick="document.getElementById('crear').style.display='none'">Cancelar</button>
+        </div>
+    </div>
+
+
+    <script>
+        // Drag & drop de tareas entre columnas
+        document.querySelectorAll('.columna').forEach(col => {
+            col.ondragover = e => e.preventDefault();
+            col.ondrop = e => {
+                const tareaId = e.dataTransfer.getData("text");
+                const nuevoEstado = col.querySelector("h2").innerText;
+
+                fetch(`/Tareas/CambiarEstadoAjax?tareaId=${tareaId}&nuevoEstado=${encodeURIComponent(nuevoEstado)}`, {
+                    method: "POST"
+                }).then(() => location.reload());
+            };
+        });
+
+        document.querySelectorAll('.tarea').forEach(t => {
+            t.draggable = true;
+            t.ondragstart = e => e.dataTransfer.setData("text", t.getAttribute("data-id"));
+        });
+    </script>
+
+</body>
+</html>

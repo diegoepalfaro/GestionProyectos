@@ -1,148 +1,95 @@
-﻿@{
-    ViewBag.Title = "Proyectos";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+﻿@model IEnumerable<dynamic>
+
+@{
+    Layout = null;
 }
 
-<style>
-    .proyectos-container {
-        background-color: #e9e9e9;
-        padding: 40px;
-        border-radius: 8px;
-    }
-
-    .btn-nuevo-proyecto {
-        background-color: #0d6efd;
-        color: white;
-        font-weight: bold;
-        padding: 10px 18px;
-        border-radius: 7px;
-        text-decoration: none;
-    }
-
-        .btn-nuevo-proyecto:hover {
-            background-color: #0b5ed7;
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        .estado-completado {
+            background: #5cb85c;
+            color: white;
+            padding: 6px;
+            border-radius: 4px;
         }
 
-    .buscador-wrapper {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        margin: 25px 0 35px 0;
-    }
-
-    .icon-lupa {
-        width: 48px;
-        height: 48px;
-    }
-
-    .campo-buscar {
-        flex: 1;
-        padding: 12px 15px;
-        border-radius: 6px;
-        border: 1px solid #bcbcbc;
-        font-size: 15px;
-    }
-
-    .btn-buscar {
-        background-color: #4CAF50;
-        color: white;
-        font-weight: bold;
-        padding: 12px 22px;
-        border: none;
-        border-radius: 6px;
-        cursor: pointer;
-    }
-
-        .btn-buscar:hover {
-            background-color: #449e47;
+        .estado-progreso {
+            background: #e9b645;
+            padding: 6px;
+            border-radius: 4px;
         }
 
-    .tabla-proyectos {
-        width: 100%;
-        background: white;
-        border-radius: 8px;
-        border-collapse: collapse;
-        overflow: hidden;
-    }
-
-        .tabla-proyectos th,
-        .tabla-proyectos td {
-            padding: 16px;
-            border-bottom: 1px solid #e0e0e0;
+        .estado-pendiente {
+            background: #e04b44;
+            padding: 6px;
+            border-radius: 4px;
+            color: white;
         }
 
-        .tabla-proyectos tr:last-child td {
-            border-bottom: none;
+        .btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
         }
 
-        .tabla-proyectos th {
-            font-weight: bold;
-            text-align: center;
-            background-color: #f5f5f5;
+        .btn-detalles {
+            background: #0275d8;
+            color: white;
         }
-</style>
 
+        .btn-completar {
+            background: #5cb85c;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <h2>Mis Proyectos</h2>
 
-<div class="proyectos-container">
-
-    <!-- Encabezado -->
-    <div class="d-flex justify-content-between align-items-center">
-        <h2 class="fw-bold">Proyectos</h2>
-        @Html.ActionLink("+ Nuevo Proyecto", "Create", null, new { @class = "btn-nuevo-proyecto" })
-    </div>
-
-    <!-- Buscador -->
-    @using (Html.BeginForm("Index", "Proyectos", FormMethod.Get))
-    {
-        <div class="buscador-wrapper">
-            <img src="https://cdn-icons-png.flaticon.com/512/954/954591.png" class="icon-lupa" />
-            <input type="text"
-                   name="search"
-                   class="campo-buscar"
-                   placeholder="Buscar proyectos..."
-                   value="@Context.Request.Query["search"]" />
-            <button type="submit" class="btn-buscar">Buscar proyectos...</button>
-        </div>
-    }
-
-    <!-- Tabla -->
-    <table class="tabla-proyectos">
+    <table class="table table-bordered">
         <thead>
             <tr>
                 <th>Proyecto</th>
+                <th>Equipo</th>
+                <th>Fecha Inicio</th>
+                <th>Fecha Fin</th>
                 <th>Estado</th>
-                <th>Progreso</th>
-                <th>Fechas</th>
+                <th>Opciones</th>
             </tr>
         </thead>
         <tbody>
             @foreach (var p in Model)
             {
+                var proyecto = p.Proyecto;
+                string estadoClase =
+                proyecto.Estado == "Completado" ? "estado-completado" :
+                proyecto.Estado == "En Progreso" ? "estado-progreso" : "estado-pendiente";
+
                 <tr>
-                    <td style="font-weight: bold; width: 35%;">
-                        @p.Nombre <br />
-                        @Html.ActionLink("(Ver detalles)", "Details", new { id = p.ProyectoId }, new { @class = "text-decoration-none small" })
-                    </td>
+                    <td>@proyecto.Nombre</td>
+                    <td>@p.NombreEquipo</td>
+                    <td>@proyecto.FechaInicio?.ToString("yyyy-MM-dd")</td>
+                    <td>@proyecto.FechaFin?.ToString("yyyy-MM-dd")</td>
+                    <td class="@estadoClase">@proyecto.Estado</td>
+                    <td>
+                        <a href="/Tareas/Proyecto/@proyecto.ProyectoID">
+                            <button class="btn btn-detalles">Ver Tareas</button>
+                        </a>
 
-                    <td style="text-align:center;">
-                        @p.Estado
-                    </td>
-
-                    <td style="text-align:center;">
-                        @{
-                            var progreso = (p.GetType().GetProperty("Progreso") != null) ? p.Progreso : 0;
+                        @if (proyecto.Estado != "Completado")
+                        {
+                            <button class="btn btn-completar"
+                                    onclick="if(confirm('¿Seguro que deseas marcar este proyecto como completado?')) location.href='/Proyectos/Completar/@proyecto.ProyectoID'">
+                                ✓ Completar
+                            </button>
                         }
-                        @progreso %
-                    </td>
-
-                    <td style="text-align:center;">
-                        @(p.FechaInicio != null ? ((DateTime)p.FechaInicio).ToString("dd/MM") : "--")
-                        –
-                        @(p.FechaFin != null ? ((DateTime)p.FechaFin).ToString("dd/MM") : "--")
                     </td>
                 </tr>
             }
         </tbody>
     </table>
-
-</div>
+</body>
+</html>

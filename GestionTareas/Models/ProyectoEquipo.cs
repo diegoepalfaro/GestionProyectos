@@ -5,11 +5,11 @@ namespace GestionTareas.Models;
 
 public partial class ProyectoEquipo
 {
-    public int ProyectoEquipoId { get; set; }
+    public int ProyectoEquipoID { get; set; }
 
-    public int ProyectoId { get; set; }
+    public int ProyectoID { get; set; }
 
-    public int EquipoId { get; set; }
+    public int EquipoID { get; set; }
 
     public virtual Equipo Equipo { get; set; } = null!;
 
