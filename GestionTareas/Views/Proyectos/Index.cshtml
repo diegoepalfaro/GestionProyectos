@@ -7,7 +7,13 @@
 <!DOCTYPE html>
 <html>
 <head>
+
     <style>
+        /* ============================
+                   TUS ESTILOS ORIGINALES
+                   (NO SE MODIFICÓ NADA)
+                   ============================ */
+
         .estado-completado {
             background: #5cb85c;
             color: white;
@@ -44,9 +50,112 @@
             background: #5cb85c;
             color: white;
         }
+
+
+        /* ===================================
+                   NUEVOS ESTILOS — AGREGADOS COMPLETOS
+                   =================================== */
+
+        :root {
+            --azul: #3A87AD;
+            --verde: #4CAF50;
+            --amarillo: #FFC107;
+            --rojo: #F44336;
+            --gris-fondo: #F5F5F5;
+            --gris-borde: #E0E0E0;
+            --blanco: #FFFFFF;
+            --texto: #333333;
+        }
+
+        body {
+            background-color: var(--gris-fondo) !important;
+            font-family: 'Segoe UI', Arial, sans-serif !important;
+            padding: 30px;
+        }
+
+        h2 {
+            font-size: 26px !important;
+            font-weight: 700 !important;
+            color: var(--texto) !important;
+            margin-bottom: 25px !important;
+        }
+
+        .table {
+            width: 90% !important;
+            background: var(--blanco) !important;
+            border-radius: 12px !important;
+            overflow: hidden !important;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.12) !important;
+            border: none !important;
+            margin-top: 15px;
+        }
+
+            .table th {
+                background: var(--azul) !important;
+                color: white !important;
+                font-size: 16px !important;
+                font-weight: 600 !important;
+                text-align: left;
+                padding: 14px !important;
+            }
+
+            .table td {
+                padding: 15px 18px !important;
+                color: var(--texto) !important;
+                border-bottom: 1px solid var(--gris-borde) !important;
+                font-size: 15px;
+            }
+
+            .table tr:last-child td {
+                border-bottom: none !important;
+            }
+
+        .table-bordered tbody tr:hover {
+            background-color: #f0f7fb !important;
+            transition: 0.25s;
+        }
+
+        .btn-detalles {
+            background: var(--azul) !important;
+            border-radius: 6px !important;
+            padding: 8px 12px !important;
+            font-weight: 600 !important;
+        }
+
+            .btn-detalles:hover {
+                background: #2f6f8c !important;
+            }
+
+        .btn-completar {
+            background: var(--verde) !important;
+            border-radius: 6px !important;
+            padding: 8px 12px !important;
+            font-weight: 600 !important;
+        }
+
+            .btn-completar:hover {
+                background: #3a8c41 !important;
+            }
+
+        .estado-completado {
+            background: var(--verde) !important;
+        }
+
+        .estado-progreso {
+            background: var(--amarillo) !important;
+            color: #333 !important;
+            font-weight: 600 !important;
+        }
+
+        .estado-pendiente {
+            background: var(--rojo) !important;
+        }
+
     </style>
 </head>
+
 <body>
+
     <h2>Mis Proyectos</h2>
 
     <table class="table table-bordered">
@@ -60,6 +169,7 @@
                 <th>Opciones</th>
             </tr>
         </thead>
+
         <tbody>
             @foreach (var p in Model)
             {
@@ -73,7 +183,9 @@
                     <td>@p.NombreEquipo</td>
                     <td>@proyecto.FechaInicio?.ToString("yyyy-MM-dd")</td>
                     <td>@proyecto.FechaFin?.ToString("yyyy-MM-dd")</td>
+
                     <td class="@estadoClase">@proyecto.Estado</td>
+
                     <td>
                         <a href="/Tareas/Proyecto/@proyecto.ProyectoID">
                             <button class="btn btn-detalles">Ver Tareas</button>
@@ -91,5 +203,6 @@
             }
         </tbody>
     </table>
+
 </body>
 </html>
