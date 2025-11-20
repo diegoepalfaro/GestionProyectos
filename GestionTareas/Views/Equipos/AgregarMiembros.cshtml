@@ -3,7 +3,7 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Equipo: @ViewBag.NombreEquipo</h2>
+<h2 class="titulo-equipo">Equipo: @ViewBag.NombreEquipo</h2>
 
 @if (TempData["Error"] != null)
 {
@@ -15,15 +15,17 @@
 }
 
 <!-- Formulario agregar miembro -->
-<form asp-action="AgregarMiembro" method="post" style="margin-bottom:30px;">
+<form asp-action="AgregarMiembro" method="post" class="form-equipo">
     <input type="hidden" name="EquipoID" value="@ViewBag.EquipoID" />
-    <label>Correo del usuario</label>
-    <input type="email" name="Email" class="form-control" required />
-    <button class="btn btn-success mt-2">Agregar al equipo</button>
+
+    <label class="label-equipo">Correo del usuario</label>
+    <input type="email" name="Email" class="form-control campo-equipo" required />
+
+    <button class="btn btn-success btn-agregar">Agregar al equipo</button>
 </form>
 
 <!-- Tabla miembros -->
-<table class="table table-bordered table-striped">
+<table class="table tabla-equipo table-bordered table-striped">
     <thead>
         <tr>
             <th>Nombre</th>
@@ -44,7 +46,7 @@
                     {
                         <form asp-action="CambiarRol" method="post" style="display:inline;">
                             <input type="hidden" name="EquipoMiembroID" value="@m.EquipoMiembroID" />
-                            <button type="submit" class="btn btn-sm btn-primary">Cambiar rol</button>
+                            <button type="submit" class="btn btn-sm btn-primary btn-cambiar-rol">Cambiar rol</button>
                         </form>
                     }
                     else
@@ -56,3 +58,107 @@
         }
     </tbody>
 </table>
+
+<style>
+
+    /* ================================
+           🎨 ESTILO PROFESIONAL AGREGADO
+           ================================ */
+
+    :root {
+        --azul: #3A87AD;
+        --verde: #4CAF50;
+        --gris-fondo: #F5F5F5;
+        --gris-borde: #E0E0E0;
+        --blanco: #FFFFFF;
+        --texto: #333;
+    }
+
+    body {
+        font-family: 'Segoe UI', Arial, sans-serif !important;
+        background-color: var(--gris-fondo) !important;
+    }
+
+    /* --- Título --- */
+    .titulo-equipo {
+        font-size: 28px;
+        font-weight: 700;
+        color: var(--texto);
+        margin-bottom: 25px;
+    }
+
+    /* --- Formulario --- */
+    .form-equipo {
+        background: var(--blanco);
+        padding: 20px;
+        width: 50%;
+        border-radius: 12px;
+        box-shadow: 0 4px 14px rgba(0,0,0,0.12);
+        margin-bottom: 35px;
+    }
+
+    .label-equipo {
+        font-weight: 600;
+        color: var(--texto);
+        margin-bottom: 5px;
+        display: block;
+    }
+
+    .campo-equipo {
+        border-radius: 6px !important;
+        padding: 10px !important;
+        border: 1px solid var(--gris-borde);
+        margin-bottom: 12px;
+    }
+
+    .btn-agregar {
+        padding: 10px 16px !important;
+        font-weight: 600 !important;
+        border-radius: 6px !important;
+        background-color: var(--verde) !important;
+        border: none !important;
+    }
+
+    /* --- Tabla del equipo --- */
+    .tabla-equipo {
+        width: 80% !important;
+        background: var(--blanco) !important;
+        border-radius: 12px !important;
+        overflow: hidden !important;
+        box-shadow: 0 4px 14px rgba(0,0,0,0.12) !important;
+    }
+
+        .tabla-equipo th {
+            background: var(--azul) !important;
+            color: white !important;
+            font-size: 16px !important;
+            font-weight: 600 !important;
+            padding: 14px !important;
+        }
+
+        .tabla-equipo td {
+            font-size: 15px !important;
+            padding: 15px 18px !important;
+            border-bottom: 1px solid var(--gris-borde) !important;
+        }
+
+        /* Hover elegante */
+        .tabla-equipo tbody tr:hover {
+            background-color: #f0f7fb !important;
+            transition: .25s ease-in-out;
+        }
+
+    /* --- Botones del panel --- */
+    .btn-cambiar-rol {
+        padding: 6px 12px !important;
+        border-radius: 6px !important;
+        background: var(--azul) !important;
+        border: none !important;
+        font-weight: 600;
+    }
+
+        .btn-cambiar-rol:hover {
+            background: #2f6f8c !important;
+        }
+
+</style>

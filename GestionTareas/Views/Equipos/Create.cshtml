@@ -3,18 +3,87 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Crear Equipo</h2>
+<h2 class="titulo-crear-equipo">Crear Equipo</h2>
 
-<form asp-action="Create" method="post">
+<form asp-action="Create" method="post" class="form-crear-equipo">
     <div class="form-group">
-        <label>Nombre del equipo</label>
-        <input type="text" name="Nombre" class="form-control" required />
+        <label class="label-crear-equipo">Nombre del equipo</label>
+        <input type="text" name="Nombre" class="form-control campo-crear-equipo" required />
     </div>
 
     <div class="form-group mt-2">
-        <label>Descripción</label>
-        <input type="text" name="Descripcion" class="form-control" />
+        <label class="label-crear-equipo">Descripción</label>
+        <input type="text" name="Descripcion" class="form-control campo-crear-equipo" />
     </div>
 
-    <button class="btn btn-primary mt-3">Crear Equipo</button>
+    <button class="btn btn-primary mt-3 btn-crear-equipo">Crear Equipo</button>
 </form>
+
+
+<style>
+
+    /* ================================
+           🎨 ESTILO PROFESIONAL INTEGRADO
+           ================================ */
+
+    :root {
+        --azul: #3A87AD;
+        --gris-fondo: #F5F5F5;
+        --gris-borde: #E0E0E0;
+        --blanco: #FFFFFF;
+        --texto: #333;
+    }
+
+    body {
+        font-family: 'Segoe UI', Arial, sans-serif !important;
+        background-color: var(--gris-fondo) !important;
+    }
+
+    /* --- Título --- */
+    .titulo-crear-equipo {
+        font-size: 28px;
+        font-weight: 700;
+        color: var(--texto);
+        margin-bottom: 25px;
+    }
+
+    /* --- Tarjeta del formulario --- */
+    .form-crear-equipo {
+        width: 50%;
+        background: var(--blanco);
+        padding: 25px;
+        border-radius: 14px;
+        box-shadow: 0 4px 14px rgba(0,0,0,0.12);
+        border: 1px solid var(--gris-borde);
+    }
+
+    .label-crear-equipo {
+        font-weight: 600;
+        color: var(--texto);
+        margin-bottom: 5px;
+        display: block;
+    }
+
+    .campo-crear-equipo {
+        border-radius: 8px !important;
+        padding: 12px !important;
+        border: 1px solid var(--gris-borde) !important;
+        margin-bottom: 12px;
+        font-size: 15px !important;
+    }
+
+    /* --- Botón Crear --- */
+    .btn-crear-equipo {
+        background: var(--azul) !important;
+        border: none !important;
+        padding: 10px 18px !important;
+        border-radius: 8px !important;
+        font-weight: 600 !important;
+        font-size: 16px !important;
+    }
+
+        .btn-crear-equipo:hover {
+            background: #2f6f8c !important;
+        }
+
+</style>
